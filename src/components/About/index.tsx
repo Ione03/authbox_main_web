@@ -1,5 +1,8 @@
 import { component$ } from "@builder.io/qwik";
 import SectionTitle from "../Common/SectionTitle";
+// import ImgAboutGif1 from '/public/images/about/about_gif1.gif?jsx';
+// import ImgAboutGif2 from '/public/images/about/about_gif2.gif?jsx';
+
 
 const checkIcon = (
     <svg width="16" height="13" viewBox="0 0 16 13" class="fill-current">
@@ -50,6 +53,7 @@ export const AboutSectionOne = component$(() => {
 
                         <div class="w-full px-4 lg:w-1/2">
                             <div class="relative mx-auto aspect-[25/24] max-w-[500px] lg:mr-0">
+                                {/* <ImgAboutGif1 /> */}
                                 <img
                                     src="/images/about/about_gif1.gif"
                                     alt="about-image"
@@ -90,6 +94,7 @@ export const AboutSectionTwo = component$(() => {
                                 alt="about image"
                                 class="drop-shadow-three"
                             />
+                            {/* <ImgAboutGif2 /> */}
 
                             {/* <img
                                 src="/images/about/about-image-2.svg"
