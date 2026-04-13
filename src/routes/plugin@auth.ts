@@ -9,5 +9,6 @@ export const { onRequest, useSession, useSignIn, useSignOut } = QwikAuth$(
                 clientSecret: event.env.get("AUTH_GOOGLE_SECRET"),
             }),
         ],
+        trustHost: true,
     })
 );
