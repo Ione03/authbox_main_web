@@ -24,6 +24,7 @@
     "qwik": "qwik"
   },
   "devDependencies": {
+    "@auth/qwik": "^0.9.1",
     "@builder.io/qwik": "^1.18.0",
     "@builder.io/qwik-city": "^1.18.0",
     "@eslint/js": "latest",
@@ -41,5 +42,8 @@
     "undici": "*",
     "vite": "7.2.6",
     "vite-tsconfig-paths": "^4.2.1"
+  },
+  "dependencies": {
+    "@auth/core": "^0.41.1"
   }
 }

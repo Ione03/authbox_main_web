@@ -1,5 +1,6 @@
 import { component$, useSignal, useVisibleTask$, $ } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
+import { useSession, useSignOut } from "~/routes/plugin@auth";
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 import { scrollToSection } from "~/utils/scroll";
@@ -9,6 +10,8 @@ export default component$(() => {
     const sticky = useSignal(false);
     const openIndex = useSignal(-1);
     const location = useLocation();
+    const session = useSession();
+    const signOut = useSignOut();
 
     useVisibleTask$(() => {
         const handleStickyNavbar = () => {
@@ -147,22 +150,46 @@ export default component$(() => {
                                 </nav>
                             </div>
                             <div class="flex items-center justify-end pr-16 lg:pr-0">
-                                <a
-                                    href="/signin"
-                                    class="text-dark hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block dark:text-white"
-                                >
-                                    Sign In
-                                </a>
-                                <a
-                                    href="/signup"
-                                    class="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 hidden rounded-md px-8 py-3 text-base font-medium text-white transition duration-300 md:block md:px-9 lg:px-6 xl:px-9"
-                                >
-                                    Sign Up
-                                </a>
-                                <div>
+                                {session.value?.user ? (
+                                    <div class="flex items-center gap-4">
+                                        <span class="hidden text-sm font-medium text-dark dark:text-white md:block">
+                                            {session.value.user.name}
+                                        </span>
+                                        {session.value.user.image && (
+                                            <img
+                                                src={session.value.user.image}
+                                                alt={session.value.user.name || "User"}
+                                                class="h-10 w-10 rounded-full"
+                                            />
+                                        )}
+                                        <button
+                                            onClick$={() => signOut.submit({ redirectTo: '/' })}
+                                            class="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 rounded-md px-6 py-2 text-base font-medium text-white transition duration-300 md:px-8 lg:px-6 xl:px-8"
+                                        >
+                                            Sign Out
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <a
+                                            href="/signin"
+                                            class="text-dark hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block dark:text-white"
+                                        >
+                                            Sign In
+                                        </a>
+                                        <a
+                                            href="/signin"
+                                            class="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 hidden rounded-md px-8 py-3 text-base font-medium text-white transition duration-300 md:block md:px-9 lg:px-6 xl:px-9"
+                                        >
+                                            Sign Up
+                                        </a>
+                                    </>
+                                )}
+                                <div class="pl-4">
                                     <ThemeToggler />
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

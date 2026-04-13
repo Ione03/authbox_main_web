@@ -1,0 +1,9 @@
+Option 1: Built-in Preview (Recommended)
+    > npm run preview
+
+Option 2: Simple HTTP Server
+    > npx serve dist
+
+Option 3: Python (if you have it installed)
+    > cd dist
+    > python -m http.server 8000
