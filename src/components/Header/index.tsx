@@ -42,14 +42,14 @@ export default component$(() => {
                                     } `}
                             >
                                 <img
-                                    src="/images/logo/logo-2.svg"
+                                    src="/static/dist-startup-nextjs/images/logo/logo-2.svg"
                                     alt="logo"
                                     width={140}
                                     height={30}
                                     class="w-full dark:hidden"
                                 />
                                 <img
-                                    src="/images/logo/logo.svg"
+                                    src="/static/dist-startup-nextjs/images/logo/logo.svg"
                                     alt="logo"
                                     width={140}
                                     height={30}

@@ -21,7 +21,7 @@ errorOnDuplicatesPkgDeps(devDependencies, dependencies);
 
 export default defineConfig(({ command, mode }): UserConfig => {
   return {
-    base: "./",
+    base: "/static/dist-startup-nextjs/",
     plugins: [
       qwikCity(),
       qwikVite(),

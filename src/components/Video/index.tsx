@@ -22,7 +22,7 @@ export default component$(() => {
                         >
                             <div class="relative aspect-[77/40] items-center justify-center">
                                 <img
-                                    src="/images/video/video.jpg"
+                                    src="/static/dist-startup-nextjs/images/video/video.jpg"
                                     alt="video image"
                                     class="h-full w-full object-cover object-center"
                                 />

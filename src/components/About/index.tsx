@@ -55,18 +55,18 @@ export const AboutSectionOne = component$(() => {
                             <div class="relative mx-auto aspect-[25/24] max-w-[500px] lg:mr-0">
                                 {/* <ImgAboutGif1 /> */}
                                 <img
-                                    src="/images/about/about_gif1.gif"
+                                    src="/static/dist-startup-nextjs/images/about/about_gif1.gif"
                                     alt="about-image"
                                     class="mx-auto max-w-full drop-shadow-three lg:mr-0"
                                 />
 
                                 {/* <img
-                                    src="/images/about/about-image.svg"
+                                    src="/static/dist-startup-nextjs/images/about/about-image.svg"
                                     alt="about-image"
                                     class="mx-auto max-w-full drop-shadow-three dark:hidden dark:drop-shadow-none lg:mr-0"
                                 />
                                 <img
-                                    src="/images/about/about-image-dark.svg"
+                                    src="/static/dist-startup-nextjs/images/about/about-image-dark.svg"
                                     alt="about-image"
                                     class="mx-auto hidden max-w-full drop-shadow-three dark:block dark:drop-shadow-none lg:mr-0"
                                 /> */}
@@ -90,19 +90,19 @@ export const AboutSectionTwo = component$(() => {
                             data-wow-delay=".15s"
                         >
                             <img
-                                src="/images/about/about_gif2.gif"
+                                src="/static/dist-startup-nextjs/images/about/about_gif2.gif"
                                 alt="about image"
                                 class="drop-shadow-three"
                             />
                             {/* <ImgAboutGif2 /> */}
 
                             {/* <img
-                                src="/images/about/about-image-2.svg"
+                                src="/static/dist-startup-nextjs/images/about/about-image-2.svg"
                                 alt="about image"
                                 class="drop-shadow-three dark:hidden dark:drop-shadow-none"
                             />
                             <img
-                                src="/images/about/about-image-2-dark.svg"
+                                src="/static/dist-startup-nextjs/images/about/about-image-2-dark.svg"
                                 alt="about image"
                                 class="hidden drop-shadow-three dark:block dark:drop-shadow-none"
                             /> */}

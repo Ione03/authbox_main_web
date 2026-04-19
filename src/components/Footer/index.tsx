@@ -23,14 +23,14 @@ export default component$(() => {
                             <div class="mb-12 max-w-[360px] lg:mb-16">
                                 <a href="/" class="mb-8 inline-block">
                                     <img
-                                        src="/images/logo/logo-2.svg"
+                                        src="/static/dist-startup-nextjs/images/logo/logo-2.svg"
                                         alt="logo"
                                         class="w-full dark:hidden"
                                         width={140}
                                         height={30}
                                     />
                                     <img
-                                        src="/images/logo/logo.svg"
+                                        src="/static/dist-startup-nextjs/images/logo/logo.svg"
                                         alt="logo"
                                         class="hidden w-full dark:block"
                                         width={140}
