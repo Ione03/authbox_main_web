@@ -4,25 +4,32 @@ export const ThemeContext = createContextId<Signal<string>>("theme-context");
 
 export const ThemeProvider = component$(() => {
     const theme = useSignal("light");
+    const initialized = useSignal(false);
 
-    // Load theme from localStorage on client
-    useVisibleTask$(() => {
-        const savedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-        if (savedTheme) {
-            theme.value = savedTheme;
-        } else if (prefersDark) {
-            theme.value = "dark";
-        }
-
-        // Apply theme class to html element
-        document.documentElement.classList.toggle("dark", theme.value === "dark");
-    });
-
-    // Watch for theme changes
+    // On mount: restore saved theme, then track future changes
     useVisibleTask$(({ track }) => {
         track(() => theme.value);
+
+        if (!initialized.value) {
+            // First run only: restore from localStorage or system preference
+            initialized.value = true;
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                if (theme.value !== savedTheme) {
+                    theme.value = savedTheme;
+                    return; // task will re-run with the correct value
+                }
+            } else {
+                const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+                const systemTheme = prefersDark ? "dark" : "light";
+                if (theme.value !== systemTheme) {
+                    theme.value = systemTheme;
+                    return;
+                }
+            }
+        }
+
+        // Apply theme class and persist (runs on mount + every toggle click)
         document.documentElement.classList.toggle("dark", theme.value === "dark");
         localStorage.setItem("theme", theme.value);
     });

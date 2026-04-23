@@ -15,6 +15,17 @@ export default component$(() => {
   return (
     <QwikCityProvider>
       <head>
+        {/* Blocking script: applies dark class before first paint to prevent flash */}
+        <script dangerouslySetInnerHTML={`
+          (function() {
+            try {
+              var saved = localStorage.getItem('theme');
+              if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+              }
+            } catch(e) {}
+          })();
+        `} />
         <meta charset="utf-8" />
         {!isDev && (
           <link
