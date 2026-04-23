@@ -61,26 +61,42 @@ const slides = [
 
 export default component$(() => {
     const current = useSignal(0);
+    const paused = useSignal(false);
 
     const goTo = $((idx: number) => {
         current.value = (idx + slides.length) % slides.length;
     });
 
-    // Auto-advance every 5 seconds
+    const togglePause = $(() => {
+        paused.value = !paused.value;
+    });
+
+    // Auto-advance every 5 seconds (skipped when paused)
     useVisibleTask$(({ cleanup }) => {
         const timer = setInterval(() => {
-            current.value = (current.value + 1) % slides.length;
+            if (!paused.value) {
+                current.value = (current.value + 1) % slides.length;
+            }
         }, 5000);
         cleanup(() => clearInterval(timer));
     });
 
     const slide = slides[current.value];
 
+    /* ── inline colour tokens (always dark bg, so force white text) ── */
+    const white      = "#ffffff";
+    const white70    = "rgba(255,255,255,0.70)";
+    const white40    = "rgba(255,255,255,0.40)";
+    const white18    = "rgba(255,255,255,0.18)";
+    const white10    = "rgba(255,255,255,0.10)";
+    const white08    = "rgba(255,255,255,0.08)";
+    const white15    = "rgba(255,255,255,0.15)";
+
     return (
         <>
             <style>{`
                 @keyframes hero-fade-up {
-                    from { opacity: 0; transform: translateY(32px); }
+                    from { opacity: 0; transform: translateY(28px); }
                     to   { opacity: 1; transform: translateY(0); }
                 }
                 @keyframes hero-bg-pan {
@@ -88,85 +104,102 @@ export default component$(() => {
                     50%  { background-position: 100% 50%; }
                     100% { background-position: 0% 50%; }
                 }
-                @keyframes float {
+                @keyframes float-icon {
                     0%, 100% { transform: translateY(0px); }
-                    50%      { transform: translateY(-12px); }
-                }
-                @keyframes pulse-ring {
-                    0%   { transform: scale(1); opacity: 0.5; }
-                    100% { transform: scale(1.8); opacity: 0; }
+                    50%      { transform: translateY(-10px); }
                 }
                 @keyframes badge-pop {
                     0%   { transform: scale(0.8); opacity: 0; }
                     100% { transform: scale(1);   opacity: 1; }
                 }
-                .hero-slide-content {
-                    animation: hero-fade-up 0.6s cubic-bezier(.22,1,.36,1) both;
+                .hero-section {
+                    transition: background 0.9s ease;
+                    background-size: 200% 200%;
+                    animation: hero-bg-pan 18s ease infinite;
                 }
-                .hero-icon-wrap {
-                    animation: float 4s ease-in-out infinite;
+                .hero-slide-content {
+                    animation: hero-fade-up 0.55s cubic-bezier(.22,1,.36,1) both;
+                }
+                .hero-icon {
+                    animation: float-icon 4s ease-in-out infinite;
+                    display: inline-block;
                 }
                 .hero-badge {
-                    animation: badge-pop 0.5s cubic-bezier(.34,1.56,.64,1) 0.15s both;
+                    animation: badge-pop 0.45s cubic-bezier(.34,1.56,.64,1) 0.1s both;
                 }
-                .hero-bg {
-                    transition: background 0.8s ease;
-                    background-size: 200% 200%;
-                    animation: hero-bg-pan 15s ease infinite;
-                }
-                .dot-btn {
-                    transition: all 0.3s ease;
-                }
-                .dot-btn.active {
-                    width: 2rem;
-                }
-                .highlight-chip {
+                .hero-chip {
                     animation: hero-fade-up 0.5s ease both;
                 }
-                .highlight-chip:nth-child(1) { animation-delay: 0.3s; }
-                .highlight-chip:nth-child(2) { animation-delay: 0.45s; }
-                .highlight-chip:nth-child(3) { animation-delay: 0.6s; }
+                .hero-chip:nth-child(1) { animation-delay: 0.25s; }
+                .hero-chip:nth-child(2) { animation-delay: 0.38s; }
+                .hero-chip:nth-child(3) { animation-delay: 0.51s; }
+                .hero-dot {
+                    height: 8px;
+                    border-radius: 9999px;
+                    transition: width 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+                }
+                .hero-dot.active { width: 32px; }
+                .hero-dot:not(.active) { width: 8px; }
+                .hero-ctrl-btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    cursor: pointer;
+                    transition: transform 0.2s ease, background 0.2s ease;
+                    font-size: 18px;
+                    line-height: 1;
+                    border: 1px solid rgba(255,255,255,0.2);
+                    background: rgba(255,255,255,0.10);
+                    color: #fff;
+                }
+                .hero-ctrl-btn:hover { transform: scale(1.12); background: rgba(255,255,255,0.18); }
             `}</style>
 
             <section
                 id="home"
-                class="hero-bg relative overflow-hidden"
-                style={{ background: slide.bg, minHeight: "100vh" }}
+                class="hero-section relative overflow-hidden"
+                style={{ background: slide.bg }}
             >
-                {/* Animated mesh/grid overlay */}
+                {/* Grid overlay */}
                 <div
-                    class="absolute inset-0 z-0 opacity-10"
+                    class="absolute inset-0 z-0"
                     style={{
                         backgroundImage:
-                            "linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px)",
+                            "linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px)," +
+                            "linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px)",
                         backgroundSize: "60px 60px",
+                        opacity: "0.8",
                     }}
                 />
 
                 {/* Glowing orbs */}
                 <div
-                    class="absolute top-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-20 z-0"
-                    style={{ background: slide.accent, transition: "background 0.8s" }}
+                    class="absolute top-1/4 right-1/4 w-72 h-72 rounded-full blur-3xl z-0"
+                    style={{ background: slide.accent, opacity: "0.18", transition: "background 0.9s" }}
                 />
                 <div
-                    class="absolute bottom-1/4 left-1/4 w-60 h-60 rounded-full blur-3xl opacity-15 z-0"
-                    style={{ background: slide.accent, transition: "background 0.8s" }}
+                    class="absolute bottom-1/3 left-1/5 w-56 h-56 rounded-full blur-3xl z-0"
+                    style={{ background: slide.accent, opacity: "0.12", transition: "background 0.9s" }}
                 />
 
-                {/* Content */}
+                {/* ── Main content ── */}
                 <div
                     class="relative z-10 flex flex-col items-center justify-center px-4 text-center"
-                    style={{ minHeight: "100vh", paddingTop: "120px", paddingBottom: "80px" }}
+                    style={{ minHeight: "100vh", paddingTop: "130px", paddingBottom: "60px" }}
                 >
-                    <div key={current.value} class="hero-slide-content mx-auto max-w-4xl">
+                    {/* Slide content (re-keyed to re-trigger animation) */}
+                    <div key={current.value} class="hero-slide-content mx-auto w-full max-w-3xl">
 
                         {/* Badge */}
                         <span
-                            class="hero-badge inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold mb-8"
+                            class="hero-badge inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold mb-6"
                             style={{
                                 background: `${slide.accent}22`,
                                 border: `1px solid ${slide.accent}55`,
-                                color: "#fff",
+                                color: white,
                             }}
                         >
                             <span
@@ -176,37 +209,46 @@ export default component$(() => {
                             {slide.badge}
                         </span>
 
-                        {/* Big icon */}
-                        <div class="hero-icon-wrap text-7xl mb-6 select-none">{slide.icon}</div>
+                        {/* Floating icon */}
+                        <div class="hero-icon text-6xl mb-5 select-none">{slide.icon}</div>
 
-                        {/* Headline */}
+                        {/* Headline — always white */}
                         <h1
-                            class="mb-6 text-4xl font-extrabold leading-tight text-white sm:text-5xl md:text-6xl"
-                            style={{ textShadow: `0 0 40px ${slide.accent}66` }}
+                            class="mb-5 text-4xl font-extrabold leading-tight sm:text-5xl md:text-6xl"
+                            style={{ color: white, textShadow: `0 0 40px ${slide.accent}55` }}
                         >
                             {slide.title}
                         </h1>
 
-                        {/* Description */}
-                        <p class="mb-8 text-lg leading-relaxed text-white/70 sm:text-xl max-w-2xl mx-auto">
+                        {/* Description — always white/70 */}
+                        <p
+                            class="mb-7 text-lg leading-relaxed sm:text-xl max-w-2xl mx-auto"
+                            style={{ color: white70 }}
+                        >
                             {slide.description}
                         </p>
 
                         {/* Feature chips */}
-                        <div class="flex flex-wrap justify-center gap-3 mb-10">
+                        <div class="flex flex-wrap justify-center gap-3 mb-8">
                             {slide.highlights.map((h) => (
                                 <span
                                     key={h}
-                                    class="highlight-chip inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium"
+                                    class="hero-chip inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-medium"
                                     style={{
-                                        background: "rgba(255,255,255,0.08)",
-                                        border: "1px solid rgba(255,255,255,0.15)",
-                                        color: "#fff",
-                                        backdropFilter: "blur(4px)",
+                                        background: white08,
+                                        border: `1px solid ${white15}`,
+                                        color: white,
+                                        backdropFilter: "blur(6px)",
                                     }}
                                 >
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                                        <path d="M2 6l3 3 5-5" stroke={slide.accent} stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                        <path
+                                            d="M2 6l3 3 5-5"
+                                            stroke={slide.accent}
+                                            stroke-width="1.8"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
                                     </svg>
                                     {h}
                                 </span>
@@ -214,24 +256,26 @@ export default component$(() => {
                         </div>
 
                         {/* CTA buttons */}
-                        <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                        <div class="flex flex-col items-center justify-center gap-4 sm:flex-row mb-10">
                             <button
                                 onClick$={scrollToAbout}
-                                class="rounded-xl px-8 py-4 text-base font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
+                                class="rounded-xl px-8 py-4 text-base font-bold transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer"
                                 style={{
-                                    background: `linear-gradient(135deg, ${slide.accent}, ${slide.accent}cc)`,
-                                    boxShadow: `0 8px 32px ${slide.accent}55`,
+                                    background: `linear-gradient(135deg, ${slide.accent}, ${slide.accent}bb)`,
+                                    boxShadow: `0 8px 28px ${slide.accent}44`,
+                                    color: white,
                                 }}
                             >
                                 {slide.cta} →
                             </button>
                             <button
                                 onClick$={scrollToAbout}
-                                class="rounded-xl px-8 py-4 text-base font-semibold text-white/80 transition-all duration-300 hover:text-white hover:scale-105 cursor-pointer"
+                                class="rounded-xl px-8 py-4 text-base font-semibold transition-all duration-300 hover:scale-105 cursor-pointer"
                                 style={{
-                                    background: "rgba(255,255,255,0.07)",
-                                    border: "1px solid rgba(255,255,255,0.18)",
+                                    background: white10,
+                                    border: `1px solid ${white18}`,
                                     backdropFilter: "blur(8px)",
+                                    color: white70,
                                 }}
                             >
                                 Pelajari Lebih Lanjut 💡
@@ -239,17 +283,18 @@ export default component$(() => {
                         </div>
                     </div>
 
-                    {/* Slide counter */}
-                    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+                    {/* ── Slideshow controls (NOT absolute — sits below CTAs) ── */}
+                    <div class="flex flex-col items-center gap-3">
+
                         {/* Dot indicators */}
                         <div class="flex items-center gap-2">
                             {slides.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick$={() => goTo(i)}
-                                    class={`dot-btn h-2 rounded-full cursor-pointer ${i === current.value ? "active" : "w-2"}`}
+                                    class={`hero-dot cursor-pointer ${i === current.value ? "active" : ""}`}
                                     style={{
-                                        background: i === current.value ? slide.accent : "rgba(255,255,255,0.3)",
+                                        background: i === current.value ? slide.accent : "rgba(255,255,255,0.30)",
                                         boxShadow: i === current.value ? `0 0 8px ${slide.accent}` : "none",
                                     }}
                                     aria-label={`Slide ${i + 1}`}
@@ -257,31 +302,39 @@ export default component$(() => {
                             ))}
                         </div>
 
-                        {/* Prev / Next arrows */}
-                        <div class="flex gap-3">
+                        {/* Prev / Pause / Next row */}
+                        <div class="flex items-center gap-3">
+                            {/* Prev */}
                             <button
                                 onClick$={() => goTo(current.value - 1)}
-                                class="flex h-9 w-9 items-center justify-center rounded-full cursor-pointer transition-all duration-200 hover:scale-110"
-                                style={{
-                                    background: "rgba(255,255,255,0.1)",
-                                    border: "1px solid rgba(255,255,255,0.2)",
-                                    color: "#fff",
-                                }}
+                                class="hero-ctrl-btn"
                                 aria-label="Previous slide"
                             >
                                 ‹
                             </button>
-                            <span class="flex items-center text-xs text-white/40 font-mono">
-                                {current.value + 1} / {slides.length}
+
+                            {/* Counter */}
+                            <span
+                                class="text-xs font-mono w-10 text-center select-none"
+                                style={{ color: white40 }}
+                            >
+                                {current.value + 1}/{slides.length}
                             </span>
+
+                            {/* Pause / Play */}
+                            <button
+                                onClick$={togglePause}
+                                class="hero-ctrl-btn"
+                                aria-label={paused.value ? "Play slideshow" : "Pause slideshow"}
+                                title={paused.value ? "Play" : "Pause"}
+                            >
+                                {paused.value ? "▶" : "⏸"}
+                            </button>
+
+                            {/* Next */}
                             <button
                                 onClick$={() => goTo(current.value + 1)}
-                                class="flex h-9 w-9 items-center justify-center rounded-full cursor-pointer transition-all duration-200 hover:scale-110"
-                                style={{
-                                    background: "rgba(255,255,255,0.1)",
-                                    border: "1px solid rgba(255,255,255,0.2)",
-                                    color: "#fff",
-                                }}
+                                class="hero-ctrl-btn"
                                 aria-label="Next slide"
                             >
                                 ›
