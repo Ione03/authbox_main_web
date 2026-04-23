@@ -54,7 +54,7 @@ export default component$(() => {
                                     height={32}
                                     class="hidden h-8 w-8 object-contain dark:block"
                                 />
-                                <span class="text-xl font-bold text-white dark:text-white"> Authbox</span>
+                                <span class={`text-xl font-bold transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}> Authbox</span>
                             </a>
                         </div>
                         <div class="flex w-full items-center justify-between px-4">
@@ -100,9 +100,11 @@ export default component$(() => {
                                                                 navbarOpen.value = false;
                                                             }
                                                         })}
-                                                        class={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${location.url.pathname === menuItem.path
+                                                        class={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 transition-colors duration-300 ${location.url.pathname === menuItem.path
                                                             ? "text-primary dark:text-white"
-                                                            : "text-white hover:text-primary dark:text-white/70 dark:hover:text-white"
+                                                            : sticky.value
+                                                                ? "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
+                                                                : "text-white hover:text-primary/80"
                                                             }`}
                                                     >
                                                         {menuItem.title}
@@ -152,7 +154,7 @@ export default component$(() => {
                             <div class="flex items-center justify-end pr-16 lg:pr-0">
                                 {session.value?.user ? (
                                     <div class="flex items-center gap-4">
-                                        <span class="hidden text-sm font-medium text-dark dark:text-white md:block">
+                                        <span class={`hidden text-sm font-medium md:block transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}>
                                             {session.value.user.name}
                                         </span>
                                         {session.value.user.image && (
@@ -173,7 +175,7 @@ export default component$(() => {
                                     <>
                                         <a
                                             href="/signin"
-                                            class="text-white hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block dark:text-white"
+                                            class={`hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}
                                         >
                                             Sign In
                                         </a>
@@ -185,7 +187,7 @@ export default component$(() => {
                                         </a>
                                     </>
                                 )}
-                                <div class="pl-4">
+                                <div class={`pl-4 transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}>
                                     <ThemeToggler />
                                 </div>
                             </div>
