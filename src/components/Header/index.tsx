@@ -54,7 +54,7 @@ export default component$(() => {
                                     height={32}
                                     class="hidden h-8 w-8 object-contain dark:block"
                                 />
-                                <span class="text-xl font-bold text-dark dark:text-white">Authbox</span>
+                                <span class="text-xl font-bold text-dark dark:text-white"> Authbox</span>
                             </a>
                         </div>
                         <div class="flex w-full items-center justify-between px-4">
@@ -105,7 +105,7 @@ export default component$(() => {
                                                             : "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
                                                             }`}
                                                     >
-                                                        {menuItem.title} 3
+                                                        {menuItem.title}
                                                     </a>
                                                 ) : (
                                                     <>
