@@ -35,13 +35,28 @@ export default component$(() => {
             >
                 <div class="container">
                     <div class="relative -mx-4 flex items-center justify-between">
-                        <div class="w-60 max-w-full px-4 xl:mr-12">
+                        <div class="w-30 max-w-full px-4 xl:mr-12 border">
                             <a
                                 href="/"
                                 class={`header-logo block w-full ${sticky.value ? "py-5 lg:py-2" : "py-8"
                                     } `}
                             >
                                 <img
+                                    src="/static/dist-startup-nextjs/images/logo/logo.png"
+                                    alt="logo"
+                                    width={10}
+                                    height={10}
+                                    class="w-full dark:hidden"
+                                />
+                                <img
+                                    src="/static/dist-startup-nextjs/images/logo/logo.png"
+                                    alt="logo"
+                                    width={10}
+                                    height={10}
+                                    class="hidden w-full dark:block"
+                                />
+                                Authbox
+                                {/* <img
                                     src="/static/dist-startup-nextjs/images/logo/logo-2.svg"
                                     alt="logo"
                                     width={140}
@@ -54,7 +69,7 @@ export default component$(() => {
                                     width={140}
                                     height={30}
                                     class="hidden w-full dark:block"
-                                />
+                                /> */}
                             </a>
                         </div>
                         <div class="flex w-full items-center justify-between px-4">
@@ -105,7 +120,7 @@ export default component$(() => {
                                                             : "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
                                                             }`}
                                                     >
-                                                        {menuItem.title}
+                                                        {menuItem.title} 3
                                                     </a>
                                                 ) : (
                                                     <>
