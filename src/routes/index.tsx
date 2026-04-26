@@ -19,17 +19,17 @@ export default component$(() => {
       <AboutSectionTwo />
       {/* <Video />
       <Testimonials /> */}
-      <Pricing />
+      {/* <Pricing /> */}
     </>
   );
 });
 
 export const head: DocumentHead = {
-  title: "WebCraft - Jasa Pembuatan Website Profesional",
+  title: "AuthBox - SAAS Website direct update data",
   meta: [
     {
       name: "description",
-      content: "Jasa pembuatan website profesional dengan teknologi terkini, desain modern, dan harga terjangkau.",
+      content: "AuthBox adalah platform website sebagai layanan untuk membuat website dengan cara yang jauh lebih mudah bahkan untuk pengguna pribadi tanpa campur tangan developer.",
     },
   ],
 };

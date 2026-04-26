@@ -11,6 +11,10 @@ export default component$(() => {
     const openIndex = useSignal(-1);
     const location = useLocation();
     const session = useSession();
+
+    // On non-home pages (e.g. /signin) the header should always be solid
+    // since there is no dark hero section behind it.
+    const isHome = location.url.pathname === "/";
     const signOut = useSignOut();
 
     useVisibleTask$(() => {
@@ -28,9 +32,10 @@ export default component$(() => {
     return (
         <>
             <header
-                class={`header top-0 left-0 z-40 flex w-full items-center ${sticky.value
-                    ? "dark:bg-gray-dark dark:shadow-sticky-dark shadow-sticky fixed z-[9999] bg-white/80 backdrop-blur-sm transition"
-                    : "absolute bg-transparent"
+                class={`header top-0 left-0 z-40 flex w-full items-center ${
+                    sticky.value || !isHome
+                        ? "dark:bg-gray-dark dark:shadow-sticky-dark shadow-sticky fixed z-[9999] bg-white/80 backdrop-blur-sm transition"
+                        : "absolute bg-transparent"
                     }`}
             >
                 <div class="container">
@@ -38,7 +43,7 @@ export default component$(() => {
                         <div class="max-w-full px-4 xl:mr-12">
                             <a
                                 href="/"
-                                class={`header-logo flex items-center gap-2 ${sticky.value ? "py-5 lg:py-2" : "py-8"} `}
+                                class={`header-logo flex items-center gap-2 ${sticky.value || !isHome ? "py-5 lg:py-2" : "py-8"} `}
                             >
                                 <img
                                     src="/static/dist-startup-nextjs/images/logo/logo.png"
@@ -54,7 +59,7 @@ export default component$(() => {
                                     height={32}
                                     class="hidden h-8 w-8 object-contain dark:block"
                                 />
-                                <span class={`text-xl font-bold transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}> Authbox</span>
+                                <span class={`text-xl font-bold transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}> Authbox</span>
                             </a>
                         </div>
                         <div class="flex w-full items-center justify-between px-4">
@@ -102,7 +107,7 @@ export default component$(() => {
                                                         })}
                                                         class={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 transition-colors duration-300 ${location.url.pathname === menuItem.path
                                                             ? "text-primary dark:text-white"
-                                                            : sticky.value
+                                                            : sticky.value || !isHome
                                                                 ? "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
                                                                 : "text-white hover:text-primary/80"
                                                             }`}
@@ -154,7 +159,7 @@ export default component$(() => {
                             <div class="flex items-center justify-end pr-16 lg:pr-0">
                                 {session.value?.user ? (
                                     <div class="flex items-center gap-4">
-                                        <span class={`hidden text-sm font-medium md:block transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}>
+                                        <span class={`hidden text-sm font-medium md:block transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}>
                                             {session.value.user.name}
                                         </span>
                                         {session.value.user.image && (
@@ -175,7 +180,7 @@ export default component$(() => {
                                     <>
                                         <a
                                             href="/signin"
-                                            class={`hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}
+                                            class={`hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}
                                         >
                                             Sign In
                                         </a>
@@ -187,7 +192,7 @@ export default component$(() => {
                                         </a>
                                     </>
                                 )}
-                                <div class={`pl-4 transition-colors duration-300 ${sticky.value ? "text-dark dark:text-white" : "text-white"}`}>
+                                <div class={`pl-4 transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}>
                                     <ThemeToggler />
                                 </div>
                             </div>

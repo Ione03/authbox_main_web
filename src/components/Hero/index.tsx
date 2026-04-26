@@ -84,13 +84,13 @@ export default component$(() => {
     const slide = slides[current.value];
 
     /* ── inline colour tokens (always dark bg, so force white text) ── */
-    const white      = "#ffffff";
-    const white70    = "rgba(255,255,255,0.70)";
-    const white40    = "rgba(255,255,255,0.40)";
-    const white18    = "rgba(255,255,255,0.18)";
-    const white10    = "rgba(255,255,255,0.10)";
-    const white08    = "rgba(255,255,255,0.08)";
-    const white15    = "rgba(255,255,255,0.15)";
+    const white = "#ffffff";
+    const white70 = "rgba(255,255,255,0.70)";
+    const white40 = "rgba(255,255,255,0.40)";
+    const white18 = "rgba(255,255,255,0.18)";
+    const white10 = "rgba(255,255,255,0.10)";
+    const white08 = "rgba(255,255,255,0.08)";
+    const white15 = "rgba(255,255,255,0.15)";
 
     return (
         <>
@@ -268,7 +268,7 @@ export default component$(() => {
                             >
                                 {slide.cta} →
                             </button>
-                            <button
+                            {/* <button
                                 onClick$={scrollToAbout}
                                 class="rounded-xl px-8 py-4 text-base font-semibold transition-all duration-300 hover:scale-105 cursor-pointer"
                                 style={{
@@ -279,7 +279,7 @@ export default component$(() => {
                                 }}
                             >
                                 Pelajari Lebih Lanjut 💡
-                            </button>
+                            </button> */}
                         </div>
                     </div>
 
