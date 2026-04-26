@@ -3,14 +3,16 @@ import { SignIn } from '../../components/auth/signin';
 
 export default component$(() => {
     return (
-        <section class="relative flex flex-col items-center justify-center bg-white px-4 py-24 dark:bg-dark sm:py-32">
+        <section class="relative bg-white px-4 py-24 dark:bg-dark sm:py-32">
             {/* Subtle background gradient that respects dark/light mode */}
             <div
                 class="pointer-events-none absolute inset-0 -z-10"
                 style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 70%);"
             />
 
-            {/* Card */}
+            <div class="container mx-auto">
+                <div class="flex justify-center border-b border-body-color/[.15] pb-16 dark:border-white/[.15] md:pb-20 lg:pb-28">
+                    {/* Card */}
             <div class="w-full max-w-md overflow-hidden rounded-2xl border border-stroke bg-white shadow-xl dark:border-dark-3 dark:bg-dark-2">
 
                 {/* Card header strip */}
@@ -45,6 +47,8 @@ export default component$(() => {
                                 Privacy Policy
                             </a>.
                         </p>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>

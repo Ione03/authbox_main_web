@@ -7,7 +7,7 @@ import Hero from "../components/Hero";
 import { AboutSectionOne, AboutSectionTwo } from "../components/About";
 // import Video from "../components/Video";
 // import Testimonials from "../components/Testimonials";
-import Pricing from "../components/Pricing";
+// import Pricing from "../components/Pricing";
 
 export default component$(() => {
   return (
