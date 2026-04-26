@@ -26,22 +26,41 @@ export default component$(() => {
                     {/* Card (Matching 'Welcome Back' sign-in card exactly) */}
                     <div class="w-full overflow-hidden rounded-2xl border border-stroke bg-white shadow-xl dark:border-dark-3 dark:bg-dark-2">
 
-                        {/* Card header strip */}
+                        {/* Card header strip (Toolbar) */}
                         <div
-                            class="px-8 py-8 text-center"
-                            style="background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);"
+                            class="flex flex-col justify-between border-b border-stroke px-6 py-6 dark:border-dark-3 sm:flex-row sm:items-center sm:px-8"
+                            style="background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.05) 100%);"
                         >
-                            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-md dark:bg-dark-3">
-                                <svg class="h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                                </svg>
+                            <div class="flex items-center gap-4">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white shadow-md dark:bg-dark-3">
+                                    <svg class="h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <h1 class="text-2xl font-bold tracking-tight text-dark dark:text-white">
+                                        Select a Template
+                                    </h1>
+                                    <p class="mt-1 text-sm text-body-color dark:text-dark-6">
+                                        Choose a starting point for your new website
+                                    </p>
+                                </div>
                             </div>
-                            <h1 class="text-2xl font-bold tracking-tight text-dark dark:text-dark">
-                                Select a Template
-                            </h1>
-                            <p class="mt-1 text-sm text-body-color dark:text-dark-6">
-                                Choose a starting point for your new website
-                            </p>
+                            
+                            <div class="mt-6 flex items-center gap-4 self-end sm:mt-0 sm:self-auto">
+                                <p class="hidden text-sm font-medium text-body-color dark:text-dark-6 sm:block">
+                                    {selectedTemplate.value ? '1 selected' : 'No selection'}
+                                </p>
+                                <button
+                                    disabled={!selectedTemplate.value}
+                                    class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-center text-sm font-medium text-white shadow-sm transition hover:bg-opacity-90 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 dark:disabled:bg-dark-3"
+                                >
+                                    Next Step
+                                    <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         {/* Card body */}
@@ -91,21 +110,6 @@ export default component$(() => {
                                 })}
                             </div>
 
-                            {/* Actions / Next button */}
-                            <div class="mt-10 flex items-center justify-between border-t border-stroke pt-6 dark:border-dark-3">
-                                <p class="text-sm font-medium text-body-color dark:text-dark-6">
-                                    {selectedTemplate.value ? '1 template selected' : 'Please select a template to continue'}
-                                </p>
-                                <button
-                                    disabled={!selectedTemplate.value}
-                                    class="inline-flex items-center justify-center rounded-md bg-primary px-8 py-3 text-center text-base font-medium text-white transition hover:bg-opacity-90 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 dark:disabled:bg-dark-3"
-                                >
-                                    Next Step
-                                    <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
