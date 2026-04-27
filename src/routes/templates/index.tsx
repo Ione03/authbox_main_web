@@ -51,15 +51,17 @@ export default component$(() => {
                                 <p class="hidden text-sm font-medium text-body-color dark:text-dark-6 sm:block">
                                     {selectedTemplate.value ? '1 selected' : 'No selection'}
                                 </p>
-                                <button
-                                    disabled={!selectedTemplate.value}
-                                    class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-center text-sm font-medium text-white shadow-sm transition hover:bg-opacity-90 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 dark:disabled:bg-dark-3"
-                                >
-                                    Next Step
-                                    <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
+                                <a href="/create-subdomain">
+                                    <button
+                                        disabled={!selectedTemplate.value}
+                                        class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-center text-sm font-medium text-white shadow-sm transition hover:bg-opacity-90 disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-50 dark:disabled:bg-dark-3"
+                                    >
+                                        Next Step
+                                        <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </a>
                             </div>
                         </div>
 
