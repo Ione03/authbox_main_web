@@ -45,7 +45,7 @@ export default component$(() => {
     ];
 
     return (
-        <section class="relative min-h-screen bg-gray-50 dark:bg-dark">
+        <section class="relative min-h-screen bg-gray-50 dark:bg-dark mt-18">
             {/* Subtle background gradient */}
             <div
                 class="pointer-events-none absolute inset-0 -z-10"
@@ -64,10 +64,10 @@ export default component$(() => {
 
                 {/* ─── Left Sidebar ─── */}
                 <aside class={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-stroke bg-white transition-transform duration-300 dark:border-dark-3 dark:bg-dark-2 lg:static lg:z-auto lg:translate-x-0 ${sidebarOpen.value ? 'translate-x-0' : '-translate-x-full'}`}>
-                    
+
                     {/* Sidebar Header / Brand */}
-                    <div class="flex h-20 items-center gap-3 border-b border-stroke px-6 dark:border-dark-3">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary shadow-md">
+                    <div class="flex items-center gap-3 border-b border-stroke px-6 dark:border-dark-3">
+                        {/* <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary shadow-md">
                             <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                             </svg>
@@ -75,7 +75,7 @@ export default component$(() => {
                         <div>
                             <h2 class="text-base font-bold text-dark dark:text-white">Authbox</h2>
                             <p class="text-[11px] text-body-color dark:text-dark-6">Dashboard</p>
-                        </div>
+                        </div> */}
                         {/* Close button (mobile only) */}
                         <button
                             onClick$={() => sidebarOpen.value = false}
@@ -98,11 +98,10 @@ export default component$(() => {
                                 <button
                                     key={item.id}
                                     onClick$={() => { activeMenu.value = item.id; sidebarOpen.value = false; }}
-                                    class={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${
-                                        isActive
-                                            ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                                            : 'text-body-color hover:bg-gray-100 dark:text-dark-6 dark:hover:bg-dark-3'
-                                    }`}
+                                    class={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all ${isActive
+                                        ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                                        : 'text-body-color hover:bg-gray-100 dark:text-dark-6 dark:hover:bg-dark-3'
+                                        }`}
                                 >
                                     <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d={item.icon} />
