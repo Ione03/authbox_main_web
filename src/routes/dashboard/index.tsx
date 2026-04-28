@@ -66,7 +66,7 @@ export default component$(() => {
                     )}
 
                     {/* ─── Left Sidebar ─── */}
-                    <aside class={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-stroke bg-white transition-transform duration-300 dark:border-dark-3 dark:bg-dark-2 lg:static lg:z-auto lg:translate-x-0 ${sidebarOpen.value ? 'translate-x-0' : '-translate-x-full'}`}>
+                    <aside class={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-stroke bg-white transition-transform duration-300 dark:border-dark-3 dark:bg-dark-2 lg:static lg:z-auto lg:translate-x-0 ${sidebarOpen.value ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
 
                         {/* Sidebar Header / Brand */}
                         <div class="flex items-center gap-3 border-b border-stroke px-6 dark:border-dark-3">
@@ -127,10 +127,23 @@ export default component$(() => {
                     </aside>
 
                     {/* ─── Main Content Area ─── */}
-                    <main class="flex-1 lg:min-h-screen">
+                    <main class="min-w-0 flex-1 lg:min-h-screen">
 
                         {/* Content */}
-                        <div class="p-6 sm:p-8">
+                        <div class="p-4 sm:p-6 lg:p-8">
+
+                            {/* Mobile hamburger + page title */}
+                            <div class="mb-4 flex items-center gap-3 lg:hidden">
+                                <button
+                                    onClick$={() => sidebarOpen.value = true}
+                                    class="flex h-9 w-9 items-center justify-center rounded-lg border border-stroke text-body-color transition hover:bg-gray-50 dark:border-dark-3 dark:text-dark-6 dark:hover:bg-dark-3"
+                                >
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                                    </svg>
+                                </button>
+                                <h1 class="text-lg font-bold text-dark dark:text-white">Dashboard</h1>
+                            </div>
 
                             {/* ─── Stats Cards ─── */}
                             <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
