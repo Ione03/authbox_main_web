@@ -556,6 +556,7 @@ export default component$(() => {
                                                                     <th class="px-6 py-3.5 font-semibold text-dark dark:text-white">Amount</th>
                                                                     <th class="px-6 py-3.5 font-semibold text-dark dark:text-white">Renewal Date</th>
                                                                     <th class="px-6 py-3.5 font-semibold text-dark dark:text-white">Auto-Renew</th>
+                                                                    <th class="px-6 py-3.5 text-right font-semibold text-dark dark:text-white">Actions</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
@@ -572,6 +573,27 @@ export default component$(() => {
                                                                         </td>
                                                                         <td class="px-6 py-4">
                                                                             <span class="inline-block rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">On</span>
+                                                                        </td>
+                                                                        <td class="px-6 py-4">
+                                                                            <div class="flex items-center justify-end gap-2">
+                                                                                <button
+                                                                                    onClick$={() => {
+                                                                                        const invoiceId = `INV-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`;
+                                                                                        const w = window.open('', '_blank', 'width=800,height=900');
+                                                                                        if (!w) return;
+                                                                                        w.document.write(`<!DOCTYPE html><html><head><title>Invoice ${invoiceId}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',system-ui,sans-serif;padding:48px;color:#1d2430;background:#fff}h1{font-size:28px;font-weight:800;color:#4a6cf7}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px}.meta{text-align:right;font-size:13px;color:#788293;line-height:1.8}.divider{height:1px;background:#e3e8ef;margin:24px 0}table{width:100%;border-collapse:collapse;margin:20px 0}th{text-align:left;padding:12px 16px;background:#f9fafb;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#788293;border-bottom:2px solid #e3e8ef}td{padding:14px 16px;border-bottom:1px solid #e3e8ef;font-size:14px}.amount{text-align:right;font-weight:700;font-size:15px}.total-row td{border-bottom:none;padding-top:16px;font-size:16px;font-weight:700}.total-row .amount{color:#4a6cf7;font-size:20px}.footer{margin-top:48px;padding-top:24px;border-top:1px solid #e3e8ef;font-size:12px;color:#788293;text-align:center}.badge{display:inline-block;background:#ecfdf5;color:#059669;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600}@media print{body{padding:32px}}</style></head><body><div class='header'><div><h1>INVOICE</h1><p style='margin-top:8px;font-size:14px;color:#788293'>${invoiceId}</p></div><div class='meta'><strong style='color:#1d2430;font-size:16px'>Authbox</strong><br>authbox.web.id<br>billing@authbox.web.id</div></div><div class='divider'></div><div style='display:flex;justify-content:space-between;margin-bottom:24px'><div><p style='font-size:12px;color:#788293;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px'>Bill To</p><p style='font-size:14px;font-weight:600'>Customer Account</p></div><div style='text-align:right'><p style='font-size:12px;color:#788293;margin-bottom:4px'>Issue Date: <strong style='color:#1d2430'>${new Date().toISOString().slice(0, 10)}</strong></p><p style='font-size:12px;color:#788293'>Due Date: <strong style='color:#1d2430'>${p.nextDate}</strong></p><p style='margin-top:8px'><span class='badge'>Upcoming</span></p></div></div><table><thead><tr><th>Description</th><th>Domain</th><th>Period</th><th class='amount'>Amount</th></tr></thead><tbody><tr><td>${p.plan}</td><td>${p.domain}</td><td>12 months</td><td class='amount'>$${p.amount}.00</td></tr><tr class='total-row'><td colspan='3' style='text-align:right;padding-right:16px'>Total Due</td><td class='amount'>$${p.amount}.00</td></tr></tbody></table><div class='footer'><p>Thank you for choosing Authbox Premium!</p><p style='margin-top:4px'>This invoice was generated automatically. For questions, contact billing@authbox.web.id</p></div></body></html>`);
+                                                                                        w.document.close();
+                                                                                        setTimeout(() => w.print(), 500);
+                                                                                    }}
+                                                                                    class="inline-flex items-center gap-1.5 rounded-md border border-stroke bg-white px-3 py-1.5 text-xs font-medium text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6 dark:hover:border-primary dark:hover:text-primary"
+                                                                                    title="Generate & Download Invoice PDF"
+                                                                                >
+                                                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                                                    </svg>
+                                                                                    Invoice PDF
+                                                                                </button>
+                                                                            </div>
                                                                         </td>
                                                                     </tr>
                                                                 ))}
