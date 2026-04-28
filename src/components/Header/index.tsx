@@ -9,6 +9,7 @@ export default component$(() => {
     const navbarOpen = useSignal(false);
     const sticky = useSignal(false);
     const openIndex = useSignal(-1);
+    const searchOpen = useSignal(false);
     const location = useLocation();
     const session = useSession();
 
@@ -157,9 +158,23 @@ export default component$(() => {
                                 </nav>
                             </div>
                             <div class="flex items-center justify-end gap-3 pr-16 lg:pr-0">
+                                {/* Search icon — always visible */}
+                                <button
+                                    onClick$={() => searchOpen.value = true}
+                                    class={`flex h-8 w-8 items-center justify-center rounded-md border transition ${
+                                        sticky.value || !isHome
+                                            ? 'border-stroke text-body-color hover:border-primary hover:text-primary dark:border-dark-3 dark:text-dark-6 dark:hover:border-primary dark:hover:text-primary'
+                                            : 'border-white/20 text-white/70 hover:border-white/40 hover:text-white'
+                                    }`}
+                                    title="Search (⌘K)"
+                                >
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </button>
+
                                 {session.value?.user ? (
                                     <div class="flex items-center gap-3">
-                                        {/* Go Premium */}
                                         <a
                                             href="/dashboard"
                                             class="hidden items-center gap-1.5 rounded-md border border-amber-400 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 shadow-sm transition hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 md:inline-flex"
@@ -236,6 +251,51 @@ export default component$(() => {
                     </div>
                 </div>
             </header>
+
+            {/* ─── Search Modal ─── */}
+            {searchOpen.value && (
+                <div
+                    class="fixed inset-0 z-[99999] flex items-start justify-center bg-black/50 px-4 pt-24 backdrop-blur-sm"
+                    onClick$={(e) => { if (e.target === e.currentTarget) searchOpen.value = false; }}
+                >
+                    <div class="w-full max-w-lg overflow-hidden rounded-2xl border border-stroke bg-white shadow-2xl dark:border-dark-3 dark:bg-dark-2">
+                        {/* Search input */}
+                        <div class="flex items-center gap-3 border-b border-stroke px-5 dark:border-dark-3">
+                            <svg class="h-5 w-5 shrink-0 text-body-color/50 dark:text-dark-6/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input
+                                type="text"
+                                placeholder="Search sites, templates, domains..."
+                                autoFocus
+                                class="w-full bg-transparent py-4 text-sm text-dark outline-none placeholder:text-body-color/50 dark:text-white dark:placeholder:text-dark-6/50"
+                            />
+                            <button
+                                onClick$={() => searchOpen.value = false}
+                                class="shrink-0 rounded-md border border-stroke px-2 py-1 text-[10px] font-medium text-body-color transition hover:bg-gray-50 dark:border-dark-3 dark:text-dark-6 dark:hover:bg-dark-3"
+                            >
+                                ESC
+                            </button>
+                        </div>
+                        {/* Quick links */}
+                        <div class="p-4">
+                            <p class="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-body-color/50 dark:text-dark-6/50">Quick Links</p>
+                            <a href="/dashboard" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-body-color transition hover:bg-gray-50 dark:text-dark-6 dark:hover:bg-dark-3">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" /></svg>
+                                My Sites
+                            </a>
+                            <a href="/templates" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-body-color transition hover:bg-gray-50 dark:text-dark-6 dark:hover:bg-dark-3">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6z" /></svg>
+                                Browse Templates
+                            </a>
+                            <a href="/create-subdomain" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-body-color transition hover:bg-gray-50 dark:text-dark-6 dark:hover:bg-dark-3">
+                                <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+                                Create New Site
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 });
