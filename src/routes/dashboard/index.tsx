@@ -16,9 +16,44 @@ export default component$(() => {
     // Mobile sidebar toggle
     const sidebarOpen = useSignal(false);
     // Active menu item
-    const activeMenu = useSignal('sites');
+    const activeMenu = useSignal('dashboard');
     // Selected site for premium upgrade
     const upgradeTarget = useSignal<number | null>(null);
+    // Dashboard analytics: selected domain
+    const selectedDomain = useSignal<number>(0); // 0 = all sites
+
+    // Mock analytics data per site
+    const analyticsData: Record<number, { visitors: number[]; pageViews: number; uniqueVisitors: number; bounceRate: number; avgDuration: string; topPages: { page: string; views: number }[]; recentActivity: { action: string; time: string; domain: string }[] }> = {
+        0: {
+            visitors: [120, 190, 230, 180, 310, 280, 350, 420, 390, 460, 510, 480],
+            pageViews: 15420,
+            uniqueVisitors: 8340,
+            bounceRate: 42.3,
+            avgDuration: '2m 45s',
+            topPages: [
+                { page: '/home', views: 4200 },
+                { page: '/about', views: 2100 },
+                { page: '/services', views: 1800 },
+                { page: '/contact', views: 1200 },
+                { page: '/blog', views: 980 },
+            ],
+            recentActivity: [
+                { action: 'New visitor from Google', time: '2 min ago', domain: 'a3f8c1d2.authbox.app' },
+                { action: 'Page view: /services', time: '5 min ago', domain: 'shop.mycompany.com' },
+                { action: 'Form submission', time: '12 min ago', domain: 'landing.agency.io' },
+                { action: 'New visitor from Twitter', time: '18 min ago', domain: 'e4f6b8c0.authbox.app' },
+                { action: 'Page view: /pricing', time: '25 min ago', domain: 'a3f8c1d2.authbox.app' },
+            ],
+        },
+        1: { visitors: [40, 55, 70, 60, 95, 85, 110, 130, 120, 150, 170, 160], pageViews: 4820, uniqueVisitors: 2610, bounceRate: 38.1, avgDuration: '3m 10s', topPages: [{ page: '/home', views: 1400 }, { page: '/about', views: 800 }], recentActivity: [{ action: 'New visitor from Google', time: '2 min ago', domain: 'a3f8c1d2.authbox.app' }] },
+        2: { visitors: [50, 80, 90, 70, 120, 100, 130, 160, 150, 180, 200, 190], pageViews: 6200, uniqueVisitors: 3200, bounceRate: 35.5, avgDuration: '3m 30s', topPages: [{ page: '/products', views: 2100 }, { page: '/cart', views: 1500 }], recentActivity: [{ action: 'Page view: /checkout', time: '5 min ago', domain: 'shop.mycompany.com' }] },
+        3: { visitors: [20, 35, 40, 30, 55, 50, 60, 70, 65, 75, 80, 70], pageViews: 2400, uniqueVisitors: 1330, bounceRate: 52.0, avgDuration: '1m 50s', topPages: [{ page: '/home', views: 800 }, { page: '/portfolio', views: 600 }], recentActivity: [{ action: 'Form submission', time: '12 min ago', domain: 'landing.agency.io' }] },
+        4: { visitors: [10, 20, 30, 20, 40, 45, 50, 60, 55, 55, 60, 60], pageViews: 2000, uniqueVisitors: 1200, bounceRate: 48.7, avgDuration: '2m 15s', topPages: [{ page: '/blog', views: 700 }, { page: '/about', views: 400 }], recentActivity: [{ action: 'New visitor from Twitter', time: '18 min ago', domain: 'e4f6b8c0.authbox.app' }] },
+    };
+
+    const currentAnalytics = analyticsData[selectedDomain.value] || analyticsData[0];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const maxVisitor = Math.max(...currentAnalytics.visitors);
 
     const handleDelete = $(() => {
         if (deleteTarget.value !== null) {
@@ -144,6 +179,146 @@ export default component$(() => {
                                 </button>
                                 <h1 class="text-lg font-bold text-dark dark:text-white">Dashboard</h1>
                             </div>
+
+                            {/* ═══════════════════════════════════════ */}
+                            {/* ─── DASHBOARD Overview Panel ─── */}
+                            {/* ═══════════════════════════════════════ */}
+                            {activeMenu.value === 'dashboard' && (
+                                <>
+                                    {/* Domain selector */}
+                                    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                        <h2 class="text-lg font-bold text-dark dark:text-white">Analytics Overview</h2>
+                                        <div class="relative">
+                                            <select
+                                                class="w-full appearance-none rounded-lg border border-stroke bg-white py-2.5 pl-4 pr-10 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white sm:w-64"
+                                                value={selectedDomain.value}
+                                                onChange$={(e) => { selectedDomain.value = Number((e.target as HTMLSelectElement).value); }}
+                                            >
+                                                <option value={0}>All Sites</option>
+                                                {subdomains.value.map(s => (
+                                                    <option key={s.id} value={s.id}>
+                                                        {`${s.customDomain || s.subdomain + '.authbox.app'}`}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-body-color dark:text-dark-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    {/* Quick stat cards */}
+                                    <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                                        <div class="rounded-xl border border-stroke bg-white p-4 shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                                            <div class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20">
+                                                <svg class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                            </div>
+                                            <p class="text-xs font-medium text-body-color dark:text-dark-6">Page Views</p>
+                                            <p class="mt-1 text-2xl font-bold text-dark dark:text-white">{currentAnalytics.pageViews.toLocaleString()}</p>
+                                        </div>
+                                        <div class="rounded-xl border border-stroke bg-white p-4 shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                                            <div class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+                                                <svg class="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                            </div>
+                                            <p class="text-xs font-medium text-body-color dark:text-dark-6">Unique Visitors</p>
+                                            <p class="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">{currentAnalytics.uniqueVisitors.toLocaleString()}</p>
+                                        </div>
+                                        <div class="rounded-xl border border-stroke bg-white p-4 shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                                            <div class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                                                <svg class="h-4 w-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+                                            </div>
+                                            <p class="text-xs font-medium text-body-color dark:text-dark-6">Bounce Rate</p>
+                                            <p class="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400">{currentAnalytics.bounceRate}%</p>
+                                        </div>
+                                        <div class="rounded-xl border border-stroke bg-white p-4 shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                                            <div class="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100 dark:bg-violet-900/30">
+                                                <svg class="h-4 w-4 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            </div>
+                                            <p class="text-xs font-medium text-body-color dark:text-dark-6">Avg. Duration</p>
+                                            <p class="mt-1 text-2xl font-bold text-violet-600 dark:text-violet-400">{currentAnalytics.avgDuration}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Visitor chart + top pages */}
+                                    <div class="mb-6 grid gap-6 lg:grid-cols-3">
+                                        {/* SVG Bar Chart */}
+                                        <div class="rounded-xl border border-stroke bg-white p-5 shadow-sm dark:border-dark-3 dark:bg-dark-2 lg:col-span-2">
+                                            <h3 class="mb-4 text-sm font-semibold text-dark dark:text-white">Monthly Visitors</h3>
+                                            <div class="overflow-x-auto">
+                                                <svg viewBox="0 0 600 220" class="min-w-[500px]" preserveAspectRatio="xMidYMid meet">
+                                                    {/* Grid lines */}
+                                                    {[0, 1, 2, 3, 4].map(i => (
+                                                        <line key={`grid-${i}`} x1="40" y1={20 + i * 40} x2="590" y2={20 + i * 40} stroke="currentColor" class="text-stroke dark:text-dark-3" stroke-width="0.5" stroke-dasharray="4 4" />
+                                                    ))}
+                                                    {/* Bars */}
+                                                    {currentAnalytics.visitors.map((v, i) => {
+                                                        const barH = maxVisitor > 0 ? (v / maxVisitor) * 160 : 0;
+                                                        const x = 50 + i * 46;
+                                                        return (
+                                                            <g key={`bar-${i}`}>
+                                                                {/* Bar gradient */}
+                                                                <rect x={x} y={180 - barH} width="28" height={barH} rx="4" class="fill-primary/80" />
+                                                                {/* Value label */}
+                                                                <text x={x + 14} y={175 - barH} text-anchor="middle" class="fill-body-color dark:fill-dark-6" style="font-size:9px">{v}</text>
+                                                                {/* Month label */}
+                                                                <text x={x + 14} y={200} text-anchor="middle" class="fill-body-color dark:fill-dark-6" style="font-size:10px">{months[i]}</text>
+                                                            </g>
+                                                        );
+                                                    })}
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        {/* Top pages */}
+                                        <div class="rounded-xl border border-stroke bg-white p-5 shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                                            <h3 class="mb-4 text-sm font-semibold text-dark dark:text-white">Top Pages</h3>
+                                            <div class="space-y-3">
+                                                {currentAnalytics.topPages.map((page) => {
+                                                    const maxPageViews = Math.max(...currentAnalytics.topPages.map(p => p.views));
+                                                    const pct = maxPageViews > 0 ? (page.views / maxPageViews) * 100 : 0;
+                                                    return (
+                                                        <div key={page.page}>
+                                                            <div class="mb-1 flex items-center justify-between">
+                                                                <span class="text-xs font-medium text-dark dark:text-white">{page.page}</span>
+                                                                <span class="text-xs text-body-color dark:text-dark-6">{page.views.toLocaleString()}</span>
+                                                            </div>
+                                                            <div class="h-2 w-full rounded-full bg-gray-100 dark:bg-dark-3">
+                                                                <div class="h-2 rounded-full bg-primary/70" style={`width: ${pct}%`} />
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Recent activity */}
+                                    <div class="rounded-xl border border-stroke bg-white p-5 shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                                        <h3 class="mb-4 text-sm font-semibold text-dark dark:text-white">Recent Activity</h3>
+                                        <div class="space-y-3">
+                                            {currentAnalytics.recentActivity.map((act, i) => (
+                                                <div key={i} class="flex items-start gap-3 rounded-lg p-2 transition hover:bg-gray-50 dark:hover:bg-dark-3">
+                                                    <div class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
+                                                        <svg class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="min-w-0 flex-1">
+                                                        <p class="text-sm text-dark dark:text-white">{act.action}</p>
+                                                        <p class="text-xs text-body-color dark:text-dark-6">{act.domain} · {act.time}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+
+                            {/* ═══════════════════════════════════════ */}
+                            {/* ─── MY SITES Panel ─── */}
+                            {/* ═══════════════════════════════════════ */}
+                            {activeMenu.value === 'sites' && (
+                                <>
 
                             {/* ─── Stats Cards ─── */}
                             <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -310,6 +485,9 @@ export default component$(() => {
                                 </div>
 
                             </div>
+
+                                </>
+                            )}
                         </div>
                     </main>
 
