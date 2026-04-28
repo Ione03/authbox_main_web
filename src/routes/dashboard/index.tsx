@@ -52,6 +52,7 @@ export default component$(() => {
                 style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 70%);"
             />
 
+            <div class="container mx-auto">
             <div class="flex">
 
                 {/* ─── Mobile Sidebar Overlay ─── */}
@@ -362,6 +363,7 @@ export default component$(() => {
                     </div>
                 </main>
 
+            </div>
             </div>
 
             {/* ─── Delete Confirmation Modal ─── */}
