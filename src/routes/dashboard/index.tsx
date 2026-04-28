@@ -17,6 +17,8 @@ export default component$(() => {
     const sidebarOpen = useSignal(false);
     // Active menu item
     const activeMenu = useSignal('sites');
+    // Selected site for premium upgrade
+    const upgradeTarget = useSignal<number | null>(null);
 
     const handleDelete = $(() => {
         if (deleteTarget.value !== null) {
@@ -312,7 +314,7 @@ export default component$(() => {
                                                         {/* Go Premium (only for non-premium rows) */}
                                                         {!site.isPremium && (
                                                             <button
-                                                                onClick$={() => showPricing.value = true}
+                                                                onClick$={() => { upgradeTarget.value = site.id; showPricing.value = true; }}
                                                                 class="inline-flex items-center justify-center rounded-md border border-amber-400 bg-amber-50 p-2 text-amber-600 transition hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40"
                                                                 title="Upgrade to Premium"
                                                             >
@@ -426,6 +428,37 @@ export default component$(() => {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
+                        </div>
+
+                        {/* Site selector */}
+                        <div class="border-b border-stroke px-8 py-5 dark:border-dark-3">
+                            <label class="mb-2 block text-xs font-semibold text-body-color dark:text-dark-6">
+                                Upgrade site
+                            </label>
+                            <div class="relative">
+                                <select
+                                    class="w-full appearance-none rounded-lg border border-stroke bg-gray-50 px-4 py-2.5 pr-10 text-sm font-medium text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:bg-dark dark:text-white dark:focus:border-primary"
+                                    onChange$={(e) => {
+                                        const val = (e.target as HTMLSelectElement).value;
+                                        upgradeTarget.value = val ? Number(val) : null;
+                                    }}
+                                >
+                                    <option value="">— Select a site —</option>
+                                    {subdomains.value
+                                        .filter(s => !s.isPremium)
+                                        .map(s => (
+                                            <option key={s.id} value={s.id} selected={upgradeTarget.value === s.id}>
+                                                {s.subdomain}.authbox.app — {s.template}
+                                            </option>
+                                        ))}
+                                </select>
+                                <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-body-color dark:text-dark-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                            {subdomains.value.filter(s => !s.isPremium).length === 0 && (
+                                <p class="mt-2 text-xs text-emerald-600 dark:text-emerald-400">All your sites are already premium! 🎉</p>
+                            )}
                         </div>
 
                         {/* Pricing cards */}

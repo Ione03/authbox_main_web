@@ -156,43 +156,78 @@ export default component$(() => {
                                     </ul>
                                 </nav>
                             </div>
-                            <div class="flex items-center justify-end pr-16 lg:pr-0">
+                            <div class="flex items-center justify-end gap-3 pr-16 lg:pr-0">
                                 {session.value?.user ? (
-                                    <div class="flex items-center gap-4">
-                                        <span class={`hidden text-sm font-medium md:block transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}>
-                                            {session.value.user.name}
-                                        </span>
-                                        {session.value.user.image && (
-                                            <img
-                                                src={session.value.user.image}
-                                                alt={session.value.user.name || "User"}
-                                                class="h-10 w-10 rounded-full"
-                                            />
-                                        )}
+                                    <div class="flex items-center gap-3">
+                                        {/* Go Premium */}
+                                        <a
+                                            href="/dashboard"
+                                            class="hidden items-center gap-1.5 rounded-md border border-amber-400 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700 shadow-sm transition hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 md:inline-flex"
+                                        >
+                                            <svg class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                            Go Premium
+                                        </a>
+
+                                        {/* User avatar + name */}
+                                        <div class="flex items-center gap-2.5">
+                                            {session.value.user.image ? (
+                                                <img
+                                                    src={session.value.user.image}
+                                                    alt={session.value.user.name || "User"}
+                                                    class="h-8 w-8 rounded-full ring-2 ring-stroke dark:ring-dark-3"
+                                                />
+                                            ) : (
+                                                <div class={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                                                    sticky.value || !isHome
+                                                        ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                                                        : 'bg-white/20 text-white'
+                                                }`}>
+                                                    {(session.value.user.name || 'U').charAt(0).toUpperCase()}
+                                                </div>
+                                            )}
+                                            <span class={`hidden text-sm font-medium md:block transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}>
+                                                {session.value.user.name}
+                                            </span>
+                                        </div>
+
+                                        {/* Logout icon button */}
                                         <button
                                             onClick$={() => signOut.submit({ redirectTo: '/' })}
-                                            class="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 rounded-md px-6 py-2 text-base font-medium text-white transition duration-300 md:px-8 lg:px-6 xl:px-8"
+                                            class={`flex h-8 w-8 items-center justify-center rounded-md border transition ${
+                                                sticky.value || !isHome
+                                                    ? 'border-stroke text-body-color hover:border-red-300 hover:text-red-500 dark:border-dark-3 dark:text-dark-6 dark:hover:border-red-500 dark:hover:text-red-400'
+                                                    : 'border-white/20 text-white/70 hover:border-red-300 hover:text-red-400'
+                                            }`}
+                                            title="Sign Out"
                                         >
-                                            Sign Out
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                            </svg>
                                         </button>
                                     </div>
                                 ) : (
-                                    <>
+                                    <div class="flex items-center gap-3">
+                                        {/* Guest avatar */}
+                                        <div class={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
+                                            sticky.value || !isHome
+                                                ? 'bg-gray-100 text-body-color dark:bg-dark-3 dark:text-dark-6'
+                                                : 'bg-white/20 text-white'
+                                        }`}>
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                        </div>
                                         <a
                                             href="/signin"
-                                            class={`hidden px-7 py-3 text-base font-medium hover:opacity-70 md:block transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}
+                                            class="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 rounded-md px-5 py-2 text-sm font-medium text-white transition duration-300"
                                         >
-                                            Sign In
+                                            Login
                                         </a>
-                                        <a
-                                            href="/signin"
-                                            class="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 hidden rounded-md px-8 py-3 text-base font-medium text-white transition duration-300 md:block md:px-9 lg:px-6 xl:px-9"
-                                        >
-                                            Sign Up
-                                        </a>
-                                    </>
+                                    </div>
                                 )}
-                                <div class={`pl-4 transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}>
+                                <div class={`pl-2 transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}>
                                     <ThemeToggler />
                                 </div>
                             </div>
