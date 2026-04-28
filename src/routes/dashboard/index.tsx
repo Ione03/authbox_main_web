@@ -21,6 +21,8 @@ export default component$(() => {
     const upgradeTarget = useSignal<number | null>(null);
     // Dashboard analytics: selected domain
     const selectedDomain = useSignal<number>(0); // 0 = all sites
+    // Payment processing modal state
+    const paymentTarget = useSignal<{ domain: string; plan: string; amount: number } | null>(null);
 
     // Mock analytics data per site
     const analyticsData: Record<number, { visitors: number[]; pageViews: number; uniqueVisitors: number; bounceRate: number; avgDuration: string; topPages: { page: string; views: number }[]; recentActivity: { action: string; time: string; domain: string }[] }> = {
@@ -78,7 +80,7 @@ export default component$(() => {
         // { id: 'templates', label: 'Templates', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
         // { id: 'domains', label: 'Domains', icon: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' },
         { id: 'billing', label: 'Billing', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
-        { id: 'settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
+        // { id: 'settings', label: 'Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' },
     ];
 
     return (
@@ -593,6 +595,18 @@ export default component$(() => {
                                                                                     </svg>
                                                                                     Invoice PDF
                                                                                 </button>
+                                                                                <button
+                                                                                    onClick$={() => {
+                                                                                        paymentTarget.value = { domain: p.domain, plan: p.plan, amount: p.amount };
+                                                                                    }}
+                                                                                    class="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary/90"
+                                                                                    title="Process Payment"
+                                                                                >
+                                                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                                                                    </svg>
+                                                                                    Pay Now
+                                                                                </button>
                                                                             </div>
                                                                         </td>
                                                                     </tr>
@@ -635,13 +649,12 @@ export default component$(() => {
                                                                     <td class="px-6 py-4 text-body-color dark:text-dark-6">{p.plan}</td>
                                                                     <td class="px-6 py-4 font-semibold text-dark dark:text-white">${p.amount}</td>
                                                                     <td class="px-6 py-4">
-                                                                        <span class={`inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                                                                            p.status === 'paid'
+                                                                        <span class={`inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${p.status === 'paid'
                                                                                 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
                                                                                 : p.status === 'refunded'
                                                                                     ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                                                                                     : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
-                                                                        }`}>
+                                                                            }`}>
                                                                             {p.status}
                                                                         </span>
                                                                     </td>
@@ -668,6 +681,137 @@ export default component$(() => {
 
                 </div>
             </div>
+
+            {/* ─── Payment Processing Modal ─── */}
+            {paymentTarget.value !== null && (
+                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+                    <div class="w-full max-w-md overflow-hidden rounded-2xl border border-stroke bg-white shadow-2xl dark:border-dark-3 dark:bg-dark-2">
+                        {/* Modal header */}
+                        <div class="flex items-center justify-between border-b border-stroke px-6 py-4 dark:border-dark-3">
+                            <div>
+                                <h3 class="text-lg font-bold text-dark dark:text-white">Process Payment</h3>
+                                <p class="mt-0.5 text-xs text-body-color dark:text-dark-6">Renew your subscription</p>
+                            </div>
+                            <button
+                                onClick$={() => paymentTarget.value = null}
+                                class="flex h-8 w-8 items-center justify-center rounded-lg text-body-color transition hover:bg-gray-100 dark:text-dark-6 dark:hover:bg-dark-3"
+                            >
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Order summary */}
+                        <div class="border-b border-stroke px-6 py-4 dark:border-dark-3">
+                            <div class="rounded-lg bg-gray-50 p-4 dark:bg-dark-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-semibold text-dark dark:text-white">{paymentTarget.value.domain}</p>
+                                        <p class="mt-0.5 text-xs text-body-color dark:text-dark-6">{paymentTarget.value.plan} — 12 months</p>
+                                    </div>
+                                    <p class="text-xl font-bold text-primary">${paymentTarget.value.amount}.00</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Payment form */}
+                        <div class="px-6 py-5">
+                            <div class="space-y-4">
+                                {/* Cardholder name */}
+                                <div>
+                                    <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Cardholder Name</label>
+                                    <input
+                                        type="text"
+                                        placeholder="John Doe"
+                                        class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+
+                                {/* Card number */}
+                                <div>
+                                    <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Card Number</label>
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="4242 4242 4242 4242"
+                                            maxLength={19}
+                                            class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 pr-12 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
+                                        />
+                                        <div class="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1">
+                                            <svg class="h-6 w-auto text-body-color/40 dark:text-dark-6/40" viewBox="0 0 24 16" fill="currentColor"><rect x="0" y="0" width="24" height="16" rx="2" opacity="0.15" /><rect x="1" y="4" width="6" height="3" rx="0.5" opacity="0.4" /><rect x="1" y="9" width="10" height="1.5" rx="0.5" opacity="0.2" /><rect x="1" y="12" width="7" height="1.5" rx="0.5" opacity="0.2" /></svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Expiry + CVC row */}
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Expiry Date</label>
+                                        <input
+                                            type="text"
+                                            placeholder="MM / YY"
+                                            maxLength={7}
+                                            class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">CVC</label>
+                                        <input
+                                            type="text"
+                                            placeholder="123"
+                                            maxLength={4}
+                                            class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Payment method selector */}
+                                <div>
+                                    <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Payment Method</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <button class="flex items-center justify-center gap-1.5 rounded-lg border-2 border-primary bg-primary/5 px-3 py-2.5 text-xs font-medium text-primary dark:bg-primary/10">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                                            Card
+                                        </button>
+                                        <button class="flex items-center justify-center gap-1.5 rounded-lg border border-stroke px-3 py-2.5 text-xs font-medium text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:text-dark-6">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" /></svg>
+                                            PayPal
+                                        </button>
+                                        <button class="flex items-center justify-center gap-1.5 rounded-lg border border-stroke px-3 py-2.5 text-xs font-medium text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:text-dark-6">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                                            E-Wallet
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal footer */}
+                        <div class="flex items-center gap-3 border-t border-stroke px-6 py-4 dark:border-dark-3">
+                            <button
+                                onClick$={() => paymentTarget.value = null}
+                                class="flex-1 rounded-lg border border-stroke px-4 py-2.5 text-sm font-medium text-body-color transition hover:bg-gray-50 dark:border-dark-3 dark:text-dark-6 dark:hover:bg-dark-3"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick$={() => {
+                                    // Mock payment processing
+                                    alert(`Payment of $${paymentTarget.value?.amount}.00 for ${paymentTarget.value?.domain} processed successfully!`);
+                                    paymentTarget.value = null;
+                                }}
+                                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90"
+                            >
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                {`Pay $${paymentTarget.value?.amount}.00`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* ─── Delete Confirmation Modal ─── */}
             {deleteTarget.value !== null && (
