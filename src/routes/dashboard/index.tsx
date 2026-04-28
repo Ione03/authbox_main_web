@@ -684,7 +684,7 @@ export default component$(() => {
 
             {/* ─── Payment Processing Modal ─── */}
             {paymentTarget.value !== null && (
-                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+                <div class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
                     <div class="w-full max-w-md overflow-hidden rounded-2xl border border-stroke bg-white shadow-2xl dark:border-dark-3 dark:bg-dark-2">
                         {/* Modal header */}
                         <div class="flex items-center justify-between border-b border-stroke px-6 py-4 dark:border-dark-3">
@@ -815,7 +815,7 @@ export default component$(() => {
 
             {/* ─── Delete Confirmation Modal ─── */}
             {deleteTarget.value !== null && (
-                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+                <div class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
                     <div class="w-full max-w-sm overflow-hidden rounded-2xl border border-stroke bg-white shadow-2xl dark:border-dark-3 dark:bg-dark-2">
                         <div class="p-6 text-center">
                             <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
@@ -848,7 +848,7 @@ export default component$(() => {
 
             {/* ─── Premium Pricing Modal ─── */}
             {showPricing.value && (
-                <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
+                <div class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm">
                     <div class="w-full max-w-2xl overflow-hidden rounded-2xl border border-stroke bg-white shadow-2xl dark:border-dark-3 dark:bg-dark-2">
                         {/* Modal header */}
                         <div class="flex items-center justify-between border-b border-stroke px-8 py-6 dark:border-dark-3"
@@ -959,7 +959,16 @@ export default component$(() => {
                                         SSL certificate
                                     </li>
                                 </ul>
-                                <button class="mt-6 w-full rounded-md bg-primary py-2.5 text-sm font-medium text-white shadow transition hover:bg-opacity-90">
+                                <button
+                                    onClick$={() => {
+                                        const site = subdomains.value.find(s => s.id === upgradeTarget.value);
+                                        if (!site) { alert('Please select a site to upgrade first.'); return; }
+                                        const domain = site.customDomain || `${site.subdomain}.authbox.app`;
+                                        showPricing.value = false;
+                                        paymentTarget.value = { domain, plan: 'Pro Plan', amount: 108 };
+                                    }}
+                                    class="mt-6 w-full rounded-md bg-primary py-2.5 text-sm font-medium text-white shadow transition hover:bg-opacity-90"
+                                >
                                     Upgrade Now
                                 </button>
                             </div>
@@ -985,8 +994,17 @@ export default component$(() => {
                                         Priority support
                                     </li>
                                 </ul>
-                                <button class="mt-6 w-full rounded-md border border-stroke py-2.5 text-sm font-medium text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:text-dark-6">
-                                    Contact Sales
+                                <button
+                                    onClick$={() => {
+                                        const site = subdomains.value.find(s => s.id === upgradeTarget.value);
+                                        if (!site) { alert('Please select a site to upgrade first.'); return; }
+                                        const domain = site.customDomain || `${site.subdomain}.authbox.app`;
+                                        showPricing.value = false;
+                                        paymentTarget.value = { domain, plan: 'Business Plan', amount: 348 };
+                                    }}
+                                    class="mt-6 w-full rounded-md border border-stroke py-2.5 text-sm font-medium text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:text-dark-6"
+                                >
+                                    Upgrade Now
                                 </button>
                             </div>
 
