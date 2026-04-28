@@ -23,6 +23,10 @@ export default component$(() => {
     const selectedDomain = useSignal<number>(0); // 0 = all sites
     // Payment processing modal state
     const paymentTarget = useSignal<{ domain: string; plan: string; amount: number } | null>(null);
+    // Action dropdown for sites table
+    const openDropdown = useSignal<number | null>(null);
+    // Dropdown position for fixed rendering
+    const dropdownPos = useSignal<{ top: number; right: number }>({ top: 0, right: 0 });
 
     // Mock analytics data per site
     const analyticsData: Record<number, { visitors: number[]; pageViews: number; uniqueVisitors: number; bounceRate: number; avgDuration: string; topPages: { page: string; views: number }[]; recentActivity: { action: string; time: string; domain: string }[] }> = {
@@ -354,7 +358,7 @@ export default component$(() => {
                                         </a>
                                     </div>
 
-                                    <div class="overflow-hidden rounded-xl border border-stroke bg-white shadow-sm dark:border-dark-3 dark:bg-dark-2">
+                                    <div class="rounded-xl border border-stroke bg-white shadow-sm dark:border-dark-3 dark:bg-dark-2">
 
                                         {/* ─── Table ─── */}
                                         <div class="overflow-x-auto">
@@ -433,10 +437,10 @@ export default component$(() => {
                                                                 {site.createdAt}
                                                             </td>
 
-                                                            {/* Action buttons — sticky on mobile scroll */}
+                                                            {/* Action buttons */}
                                                             <td class="sticky right-0 bg-white/95 px-6 py-4 backdrop-blur-sm dark:bg-dark-2/95">
                                                                 <div class="flex items-center justify-end gap-2">
-                                                                    {/* Go Premium (only for non-premium rows) */}
+                                                                    {/* Upgrade Premium — standalone */}
                                                                     {!site.isPremium && (
                                                                         <button
                                                                             onClick$={() => { upgradeTarget.value = site.id; showPricing.value = true; }}
@@ -448,19 +452,23 @@ export default component$(() => {
                                                                             </svg>
                                                                         </button>
                                                                     )}
-                                                                    {/* Edit */}
-                                                                    <button class="inline-flex items-center justify-center rounded-md border border-stroke bg-white p-2 text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6 dark:hover:border-primary dark:hover:text-primary">
-                                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                                        </svg>
-                                                                    </button>
-                                                                    {/* Delete */}
+                                                                    {/* More actions dropdown */}
                                                                     <button
-                                                                        onClick$={() => deleteTarget.value = site.id}
-                                                                        class="inline-flex items-center justify-center rounded-md border border-stroke bg-white p-2 text-body-color transition hover:border-red-400 hover:text-red-500 dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6 dark:hover:border-red-500 dark:hover:text-red-400"
+                                                                        onClick$={(e) => {
+                                                                            if (openDropdown.value === site.id) {
+                                                                                openDropdown.value = null;
+                                                                            } else {
+                                                                                const btn = e.target as HTMLElement;
+                                                                                const rect = btn.closest('button')!.getBoundingClientRect();
+                                                                                dropdownPos.value = { top: rect.bottom + 4, right: window.innerWidth - rect.right };
+                                                                                openDropdown.value = site.id;
+                                                                            }
+                                                                        }}
+                                                                        class="inline-flex items-center justify-center rounded-md border border-stroke bg-white p-2 text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6 dark:hover:border-primary dark:hover:text-primary"
+                                                                        title="More actions"
                                                                     >
                                                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                                                                         </svg>
                                                                     </button>
                                                                 </div>
@@ -490,6 +498,62 @@ export default component$(() => {
 
                                 </>
                             )}
+
+                            {/* ─── Fixed Dropdown Portal (outside overflow container) ─── */}
+                            {openDropdown.value !== null && (() => {
+                                const site = subdomains.value.find(s => s.id === openDropdown.value);
+                                if (!site) return null;
+                                return (
+                                    <>
+                                        {/* Backdrop to close dropdown */}
+                                        <div
+                                            class="fixed inset-0 z-[9998]"
+                                            onClick$={() => openDropdown.value = null}
+                                        />
+                                        {/* Dropdown menu */}
+                                        <div
+                                            class="fixed z-[9999] w-48 overflow-hidden rounded-xl border border-stroke bg-white shadow-xl dark:border-dark-3 dark:bg-dark-2"
+                                            style={{ top: `${dropdownPos.value.top}px`, right: `${dropdownPos.value.right}px` }}
+                                        >
+                                            {/* View Site */}
+                                            <a
+                                                href={`https://${site.customDomain || site.subdomain + '.authbox.app'}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-body-color transition hover:bg-gray-50 dark:text-dark-6 dark:hover:bg-dark-3"
+                                                onClick$={() => openDropdown.value = null}
+                                            >
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                </svg>
+                                                View Site
+                                            </a>
+                                            {/* Edit */}
+                                            <button
+                                                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-body-color transition hover:bg-gray-50 dark:text-dark-6 dark:hover:bg-dark-3"
+                                                onClick$={() => openDropdown.value = null}
+                                            >
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                                Edit
+                                            </button>
+                                            {/* Divider */}
+                                            <div class="border-t border-stroke dark:border-dark-3"></div>
+                                            {/* Delete */}
+                                            <button
+                                                onClick$={() => { deleteTarget.value = site.id; openDropdown.value = null; }}
+                                                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 transition hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            >
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </>
+                                );
+                            })()}
 
                             {/* ═══════════════════════════════════════ */}
                             {/* ─── BILLING Panel ─── */}
@@ -650,10 +714,10 @@ export default component$(() => {
                                                                     <td class="px-6 py-4 font-semibold text-dark dark:text-white">${p.amount}</td>
                                                                     <td class="px-6 py-4">
                                                                         <span class={`inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${p.status === 'paid'
-                                                                                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
-                                                                                : p.status === 'refunded'
-                                                                                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-                                                                                    : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+                                                                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+                                                                            : p.status === 'refunded'
+                                                                                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                                                                                : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
                                                                             }`}>
                                                                             {p.status}
                                                                         </span>
