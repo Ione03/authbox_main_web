@@ -51,7 +51,7 @@ export default component$(() => {
             {/* Subtle background gradient */}
             <div
                 class="pointer-events-none absolute inset-0 -z-10"
-                style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 70%);"
+                style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99,102,241,0.04) 0%, transparent 70%);"
             />
 
             <div class="container mx-auto">
@@ -129,38 +129,6 @@ export default component$(() => {
                     {/* ─── Main Content Area ─── */}
                     <main class="flex-1 lg:min-h-screen">
 
-                        {/* Top Toolbar */}
-                        <div class="flex h-16 items-center justify-between border-b border-stroke bg-white px-6 dark:border-dark-3 dark:bg-dark-2 sm:px-8">
-                            <div class="flex items-center gap-4">
-                                {/* Mobile hamburger */}
-                                <button
-                                    onClick$={() => sidebarOpen.value = true}
-                                    class="flex h-9 w-9 items-center justify-center rounded-lg border border-stroke text-body-color transition hover:bg-gray-50 dark:border-dark-3 dark:text-dark-6 dark:hover:bg-dark-3 lg:hidden"
-                                >
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                {/* Notifications */}
-                                <button class="relative flex h-9 w-9 items-center justify-center rounded-lg border border-stroke text-body-color transition hover:bg-gray-50 dark:border-dark-3 dark:text-dark-6 dark:hover:bg-dark-3">
-                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                                    </svg>
-                                    <span class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">2</span>
-                                </button>
-                                <a href="/templates">
-                                    <button class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-opacity-90">
-                                        <svg class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                        </svg>
-                                        New Site
-                                    </button>
-                                </a>
-                            </div>
-                        </div>
-
                         {/* Content */}
                         <div class="p-6 sm:p-8">
 
@@ -184,13 +152,25 @@ export default component$(() => {
                                 </div>
                             </div>
 
+                            {/* Action bar above table */}
+                            <div class="mb-4 flex items-center justify-between">
+                                <h2 class="text-sm font-semibold text-dark dark:text-white">My Sites</h2>
+                                <a href="/templates">
+                                    <button class="inline-flex items-center justify-center rounded-md border border-stroke bg-white p-2 text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:bg-dark-2 dark:text-dark-6 dark:hover:border-primary dark:hover:text-primary" title="Add New Site">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                        </svg>
+                                    </button>
+                                </a>
+                            </div>
+
                             <div class="overflow-hidden rounded-xl border border-stroke bg-white shadow-sm dark:border-dark-3 dark:bg-dark-2">
 
                                 {/* ─── Table ─── */}
                                 <div class="overflow-x-auto">
                                     <table class="w-full min-w-[700px] text-left text-sm">
                                         <thead>
-                                            <tr class="border-b border-stroke bg-gray-50/60 dark:border-dark-3 dark:bg-dark-2/60">
+                                            <tr class="border-b border-stroke bg-gray-50/60 dark:border-dark-3 dark:bg-dark/60">
                                                 <th class="px-6 py-4 font-semibold text-dark dark:text-white">Domain</th>
                                                 <th class="px-6 py-4 font-semibold text-dark dark:text-white">Template</th>
                                                 <th class="px-6 py-4 font-semibold text-dark dark:text-white">Status</th>
@@ -208,7 +188,7 @@ export default component$(() => {
                                         </thead>
                                         <tbody>
                                             {subdomains.value.map((site) => (
-                                                <tr key={site.id} class="border-b border-stroke transition-colors last:border-b-0 hover:bg-gray-50/50 dark:border-dark-3 dark:hover:bg-dark-2/50">
+                                                <tr key={site.id} class="border-b border-stroke transition-colors last:border-b-0 hover:bg-gray-50/50 dark:border-dark-3 dark:hover:bg-dark/50">
                                                     {/* Domain column */}
                                                     <td class="px-6 py-4">
                                                         <div class="flex flex-col">
@@ -403,7 +383,7 @@ export default component$(() => {
                                         .filter(s => !s.isPremium)
                                         .map(s => (
                                             <option key={s.id} value={s.id} selected={upgradeTarget.value === s.id}>
-                                                {s.subdomain}.authbox.app — {s.template}
+                                                {`${s.subdomain}.authbox.app — ${s.template}`}
                                             </option>
                                         ))}
                                 </select>
