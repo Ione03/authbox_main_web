@@ -16,7 +16,7 @@ export default component$(() => {
     // Mobile sidebar toggle
     const sidebarOpen = useSignal(false);
     // Active menu item
-    const activeMenu = useSignal('dashboard');
+    const activeMenu = useSignal('sites');
     // Selected site for premium upgrade
     const upgradeTarget = useSignal<number | null>(null);
     // Dashboard analytics: selected domain

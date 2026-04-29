@@ -286,16 +286,6 @@ export default component$(() => {
                                     </div>
                                 ) : (
                                     <div class="flex items-center gap-3">
-                                        {/* Guest avatar */}
-                                        <div class={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold ${
-                                            sticky.value || !isHome
-                                                ? 'bg-gray-100 text-body-color dark:bg-dark-3 dark:text-dark-6'
-                                                : 'bg-white/20 text-white'
-                                        }`}>
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                            </svg>
-                                        </div>
                                         <a
                                             href="/signin"
                                             class="ease-in-up shadow-btn hover:shadow-btn-hover bg-primary hover:bg-primary/90 rounded-md px-5 py-2 text-sm font-medium text-white transition duration-300"
