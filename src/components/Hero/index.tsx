@@ -87,8 +87,6 @@ export default component$(() => {
     const white = "#ffffff";
     const white70 = "rgba(255,255,255,0.70)";
     const white40 = "rgba(255,255,255,0.40)";
-    const white18 = "rgba(255,255,255,0.18)";
-    const white10 = "rgba(255,255,255,0.10)";
     const white08 = "rgba(255,255,255,0.08)";
     const white15 = "rgba(255,255,255,0.15)";
 

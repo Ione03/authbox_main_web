@@ -85,6 +85,8 @@ export default component$(() => {
                                                     src={tpl.imageUrl}
                                                     alt={tpl.name}
                                                     loading="lazy"
+                                                    width={800}
+                                                    height={600}
                                                     class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                                                 />
                                                 {/* Overlay effect to simulate interactive area */}

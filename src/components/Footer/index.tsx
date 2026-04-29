@@ -1,6 +1,8 @@
 import { component$, $, } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { scrollToSection } from "~/utils/scroll";
+import ImgLogo2 from '~/media/images/logo/logo-2.svg?jsx';
+import ImgLogo from '~/media/images/logo/logo.svg?jsx';
 
 export default component$(() => {
     const location = useLocation();
@@ -21,20 +23,14 @@ export default component$(() => {
                     <div class="-mx-4 flex flex-wrap">
                         <div class="w-full px-4 md:w-1/2 lg:w-4/12 xl:w-5/12">
                             <div class="mb-12 max-w-[360px] lg:mb-16">
-                                <a href="/" class="mb-8 inline-block">
-                                    <img
-                                        src="/static/dist-startup-nextjs/images/logo/logo-2.svg"
-                                        alt="logo"
+                                <a href="/" aria-label="Home" class="mb-8 inline-block">
+                                    <ImgLogo2
+                                        aria-label="logo"
                                         class="w-full dark:hidden"
-                                        width={140}
-                                        height={30}
                                     />
-                                    <img
-                                        src="/static/dist-startup-nextjs/images/logo/logo.svg"
-                                        alt="logo"
+                                    <ImgLogo
+                                        aria-label="logo"
                                         class="hidden w-full dark:block"
-                                        width={140}
-                                        height={30}
                                     />
                                 </a>
                                 <p class="mb-9 text-base leading-relaxed text-body-color dark:text-body-color-dark">

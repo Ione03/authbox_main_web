@@ -1,7 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 import SectionTitle from "../Common/SectionTitle";
-// import ImgAboutGif1 from '/public/images/about/about_gif1.gif?jsx';
-// import ImgAboutGif2 from '/public/images/about/about_gif2.gif?jsx';
+import ImgAboutGif1 from '~/media/images/about/about_gif1.gif?jsx';
+import ImgAboutGif2 from '~/media/images/about/about_gif2.gif?jsx';
 
 
 const checkIcon = (
@@ -53,9 +53,7 @@ export const AboutSectionOne = component$(() => {
 
                         <div class="w-full px-4 lg:w-1/2">
                             <div class="relative mx-auto aspect-[25/24] max-w-[500px] lg:mr-0">
-                                {/* <ImgAboutGif1 /> */}
-                                <img
-                                    src="/static/dist-startup-nextjs/images/about/about_gif1.gif"
+                                <ImgAboutGif1
                                     alt="about-image"
                                     class="mx-auto max-w-full drop-shadow-three lg:mr-0"
                                 />
@@ -90,12 +88,10 @@ export const AboutSectionTwo = component$(() => {
                                 class="relative mx-auto mb-12 aspect-[25/24] max-w-[500px] text-center lg:m-0"
                                 data-wow-delay=".15s"
                             >
-                                <img
-                                    src="/static/dist-startup-nextjs/images/about/about_gif2.gif"
+                                <ImgAboutGif2
                                     alt="about image"
                                     class="drop-shadow-three"
                                 />
-                                {/* <ImgAboutGif2 /> */}
 
                                 {/* <img
                                     src="/static/dist-startup-nextjs/images/about/about-image-2.svg"

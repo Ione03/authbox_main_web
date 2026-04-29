@@ -1,18 +1,15 @@
-import { component$, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { component$, useSignal } from '@builder.io/qwik';
 
 export default component$(() => {
+    // Generates an 8-character long hexadecimal string at component setup (runs during SSR
+    // and is serialized to the client, so no useVisibleTask$ / hydration mismatch).
+    const initialSubdomain = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
     // Stores the randomly generated hex string
-    const subdomain = useSignal<string>('');
+    const subdomain = useSignal<string>(initialSubdomain);
     // Tracks whether the user is choosing the Premium custom domain
     const useCustomDomain = useSignal<boolean>(false);
     // Stores the user's custom domain input
     const customDomain = useSignal<string>('');
-
-    // Generate random 8-digit hexadecimal on mount
-    useVisibleTask$(() => {
-        // Generates an 8-character long hexadecimal string
-        subdomain.value = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
-    });
 
     return (
         <section class="relative bg-white px-4 py-24 dark:bg-dark sm:py-32">

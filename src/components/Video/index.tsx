@@ -1,5 +1,6 @@
 import { component$, useSignal } from "@builder.io/qwik";
 import SectionTitle from "../Common/SectionTitle";
+import ImgVideo from '~/media/images/video/video.jpg?jsx';
 
 export default component$(() => {
     const isOpen = useSignal(false);
@@ -21,8 +22,7 @@ export default component$(() => {
                             data-wow-delay=".15s"
                         >
                             <div class="relative aspect-[77/40] items-center justify-center">
-                                <img
-                                    src="/static/dist-startup-nextjs/images/video/video.jpg"
+                                <ImgVideo
                                     alt="video image"
                                     class="h-full w-full object-cover object-center"
                                 />

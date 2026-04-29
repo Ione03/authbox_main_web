@@ -4,6 +4,7 @@ import { useSession, useSignOut } from "~/routes/plugin@auth";
 import ThemeToggler from "./ThemeToggler";
 import menuData from "./menuData";
 import { scrollToSection } from "~/utils/scroll";
+import ImgLogo from '~/media/images/logo/logo.png?jsx';
 
 export default component$(() => {
     const navbarOpen = useSignal(false);
@@ -46,18 +47,12 @@ export default component$(() => {
                                 href="/"
                                 class={`header-logo flex items-center gap-2 ${sticky.value || !isHome ? "py-5 lg:py-2" : "py-8"} `}
                             >
-                                <img
-                                    src="/static/dist-startup-nextjs/images/logo/logo.png"
+                                <ImgLogo
                                     alt="logo"
-                                    width={32}
-                                    height={32}
                                     class="h-8 w-8 object-contain dark:hidden"
                                 />
-                                <img
-                                    src="/static/dist-startup-nextjs/images/logo/logo.png"
+                                <ImgLogo
                                     alt="logo"
-                                    width={32}
-                                    height={32}
                                     class="hidden h-8 w-8 object-contain dark:block"
                                 />
                                 <span class={`text-xl font-bold transition-colors duration-300 ${sticky.value || !isHome ? "text-dark dark:text-white" : "text-white"}`}> Authbox</span>
