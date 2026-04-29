@@ -6,7 +6,7 @@ export const SignIn = component$(() => {
 
     return (
         <button
-            onClick$={() => signIn.submit({ providerId: 'google' })}
+            onClick$={() => signIn.submit({ providerId: 'google', redirectTo: '/templates' })}
             class="flex items-center gap-2 rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow ring-1 ring-gray-300 hover:bg-gray-50 dark:bg-dark dark:text-white dark:ring-gray-600 dark:hover:bg-gray-800"
         >
             <img
