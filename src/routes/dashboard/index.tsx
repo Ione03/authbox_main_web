@@ -1,4 +1,5 @@
 import { $, component$, useSignal } from '@builder.io/qwik';
+import { createSnapTransaction } from '../../lib/midtrans';
 
 export default component$(() => {
     // Mock data for created subdomains
@@ -23,6 +24,44 @@ export default component$(() => {
     const selectedDomain = useSignal<number>(0); // 0 = all sites
     // Payment processing modal state
     const paymentTarget = useSignal<{ domain: string; plan: string; amount: number } | null>(null);
+    // Midtrans payment loading state
+    const paymentLoading = useSignal(false);
+
+    const handleMidtransPayment = $(async (domain: string, plan: string, amount: number) => {
+        paymentLoading.value = true;
+        const orderId = `ORDER-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        const { token, error } = await createSnapTransaction({
+            orderId,
+            amount: amount * 100, // Midtrans expects amount in smallest currency unit for IDR, but for USD sandbox use full amount
+            itemName: `${plan} — ${domain}`,
+        });
+        paymentLoading.value = false;
+
+        if (error || !token) {
+            alert(error || 'Failed to create payment');
+            return;
+        }
+
+        // Close any open modal before opening Snap
+        paymentTarget.value = null;
+
+        // Open Midtrans Snap popup
+        (window as any).snap.pay(token, {
+            onSuccess: () => {
+                alert('Payment successful! Your subscription has been activated.');
+                window.location.reload();
+            },
+            onPending: () => {
+                alert('Payment pending. We will notify you once completed.');
+            },
+            onError: () => {
+                alert('Payment failed. Please try again.');
+            },
+            onClose: () => {
+                // User closed Snap popup without finishing
+            },
+        });
+    });
     // Action dropdown for sites table
     const openDropdown = useSignal<number | null>(null);
     // Dropdown position for fixed rendering
@@ -773,7 +812,7 @@ export default component$(() => {
                         <div class="flex items-center justify-between border-b border-stroke px-6 py-4 dark:border-dark-3">
                             <div>
                                 <h3 class="text-lg font-bold text-dark dark:text-white">Process Payment</h3>
-                                <p class="mt-0.5 text-xs text-body-color dark:text-dark-6">Renew your subscription</p>
+                                <p class="mt-0.5 text-xs text-body-color dark:text-dark-6">Secure checkout via Midtrans</p>
                             </div>
                             <button
                                 onClick$={() => paymentTarget.value = null}
@@ -786,8 +825,8 @@ export default component$(() => {
                         </div>
 
                         {/* Order summary */}
-                        <div class="border-b border-stroke px-6 py-4 dark:border-dark-3">
-                            <div class="rounded-lg bg-gray-50 p-4 dark:bg-dark-3">
+                        <div class="px-6 py-5">
+                            <div class="rounded-lg bg-gray-50 p-5 dark:bg-dark-3">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm font-semibold text-dark dark:text-white">{paymentTarget.value.domain}</p>
@@ -796,77 +835,14 @@ export default component$(() => {
                                     <p class="text-xl font-bold text-primary">${paymentTarget.value.amount}.00</p>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Payment form */}
-                        <div class="px-6 py-5">
-                            <div class="space-y-4">
-                                {/* Cardholder name */}
-                                <div>
-                                    <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Cardholder Name</label>
-                                    <input
-                                        type="text"
-                                        placeholder="John Doe"
-                                        class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                    />
-                                </div>
-
-                                {/* Card number */}
-                                <div>
-                                    <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Card Number</label>
-                                    <div class="relative">
-                                        <input
-                                            type="text"
-                                            placeholder="4242 4242 4242 4242"
-                                            maxLength={19}
-                                            class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 pr-12 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                        />
-                                        <div class="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-1">
-                                            <svg class="h-6 w-auto text-body-color/40 dark:text-dark-6/40" viewBox="0 0 24 16" fill="currentColor"><rect x="0" y="0" width="24" height="16" rx="2" opacity="0.15" /><rect x="1" y="4" width="6" height="3" rx="0.5" opacity="0.4" /><rect x="1" y="9" width="10" height="1.5" rx="0.5" opacity="0.2" /><rect x="1" y="12" width="7" height="1.5" rx="0.5" opacity="0.2" /></svg>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Expiry + CVC row */}
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Expiry Date</label>
-                                        <input
-                                            type="text"
-                                            placeholder="MM / YY"
-                                            maxLength={7}
-                                            class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">CVC</label>
-                                        <input
-                                            type="text"
-                                            placeholder="123"
-                                            maxLength={4}
-                                            class="w-full rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none transition focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Payment method selector */}
-                                <div>
-                                    <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Payment Method</label>
-                                    <div class="grid grid-cols-3 gap-2">
-                                        <button class="flex items-center justify-center gap-1.5 rounded-lg border-2 border-primary bg-primary/5 px-3 py-2.5 text-xs font-medium text-primary dark:bg-primary/10">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                                            Card
-                                        </button>
-                                        <button class="flex items-center justify-center gap-1.5 rounded-lg border border-stroke px-3 py-2.5 text-xs font-medium text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:text-dark-6">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" /></svg>
-                                            PayPal
-                                        </button>
-                                        <button class="flex items-center justify-center gap-1.5 rounded-lg border border-stroke px-3 py-2.5 text-xs font-medium text-body-color transition hover:border-primary hover:text-primary dark:border-dark-3 dark:text-dark-6">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                                            E-Wallet
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="mt-4 rounded-lg border border-sky-200 bg-sky-50/50 p-3 dark:border-sky-800 dark:bg-sky-900/20">
+                                <p class="flex items-center gap-2 text-xs text-sky-700 dark:text-sky-400">
+                                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                    You'll be redirected to Midtrans secure payment page to complete your purchase.
+                                </p>
                             </div>
                         </div>
 
@@ -874,22 +850,34 @@ export default component$(() => {
                         <div class="flex items-center gap-3 border-t border-stroke px-6 py-4 dark:border-dark-3">
                             <button
                                 onClick$={() => paymentTarget.value = null}
-                                class="flex-1 rounded-lg border border-stroke px-4 py-2.5 text-sm font-medium text-body-color transition hover:bg-gray-50 dark:border-dark-3 dark:text-dark-6 dark:hover:bg-dark-3"
+                                class="flex-1 rounded-lg border border-stroke px-4 py-2.5 text-sm font-medium text-body-color transition hover:bg-gray-50 dark:border-dark-3 dark:text-dark-6 dark:hover:bg-dark-3 cursor-pointer"
                             >
                                 Cancel
                             </button>
                             <button
+                                disabled={paymentLoading.value}
                                 onClick$={() => {
-                                    // Mock payment processing
-                                    alert(`Payment of $${paymentTarget.value?.amount}.00 for ${paymentTarget.value?.domain} processed successfully!`);
-                                    paymentTarget.value = null;
+                                    if (paymentTarget.value) {
+                                        handleMidtransPayment(
+                                            paymentTarget.value.domain,
+                                            paymentTarget.value.plan,
+                                            paymentTarget.value.amount
+                                        );
+                                    }
                                 }}
-                                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90"
+                                class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                             >
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                                {`Pay $${paymentTarget.value?.amount}.00`}
+                                {paymentLoading.value ? (
+                                    <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                ) : (
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                )}
+                                {paymentLoading.value ? 'Processing...' : `Pay $${paymentTarget.value?.amount}.00`}
                             </button>
                         </div>
                     </div>

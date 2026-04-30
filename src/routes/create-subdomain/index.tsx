@@ -1,5 +1,6 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { server$, useNavigate } from '@builder.io/qwik-city';
+import { createSnapTransaction } from '../../lib/midtrans';
 
 const checkSubdomain = server$(async function (sub: string) {
     sub = sub.trim().toLowerCase();
@@ -152,7 +153,42 @@ export default component$(() => {
     const selectedDomain = useSignal<DomainResult | null>(null);
     // Registration modal
     const showRegister = useSignal(false);
+    const registerLoading = useSignal(false);
     const nav = useNavigate();
+
+    const handleMidtransRegister = $(async () => {
+        if (!selectedDomain.value) return;
+        registerLoading.value = true;
+        const orderId = `DOM-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        const amount = parseFloat(selectedDomain.value.price || '0');
+        const { token, error } = await createSnapTransaction({
+            orderId,
+            amount: Math.round(amount * 100), // convert to cents / smallest unit
+            itemName: `Domain Registration: ${selectedDomain.value.domain} (1 year)`,
+        });
+        registerLoading.value = false;
+
+        if (error || !token) {
+            alert(error || 'Failed to create payment');
+            return;
+        }
+
+        showRegister.value = false;
+
+        (window as any).snap.pay(token, {
+            onSuccess: async () => {
+                alert(`Domain ${selectedDomain.value?.domain} registered successfully!`);
+                await nav('/dashboard');
+            },
+            onPending: () => {
+                alert('Payment pending. We will notify you once completed.');
+            },
+            onError: () => {
+                alert('Payment failed. Please try again.');
+            },
+            onClose: () => {},
+        });
+    });
 
     const handleCheckDomain = $(async () => {
         const d = customDomain.value.trim();
@@ -596,73 +632,40 @@ export default component$(() => {
                             </div>
                         </div>
 
-                        {/* Payment form */}
-                        <form
-                            preventdefault:submit
-                            onSubmit$={$(async () => {
-                                showRegister.value = false;
-                                await nav('/dashboard');
-                            })}
-                            class="space-y-5 px-8 py-6"
-                        >
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-dark dark:text-white">Name on card</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="John Doe"
-                                    class="w-full rounded-md border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-
-                            <div>
-                                <label class="mb-1.5 block text-sm font-medium text-dark dark:text-white">Card number</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="4242 4242 4242 4242"
-                                    maxLength={19}
-                                    class="w-full rounded-md border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-
-                            <div class="flex gap-4">
-                                <div class="flex-1">
-                                    <label class="mb-1.5 block text-sm font-medium text-dark dark:text-white">Expiry</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="MM / YY"
-                                        maxLength={7}
-                                        class="w-full rounded-md border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                    />
-                                </div>
-                                <div class="w-28">
-                                    <label class="mb-1.5 block text-sm font-medium text-dark dark:text-white">CVV</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        placeholder="123"
-                                        maxLength={4}
-                                        class="w-full rounded-md border border-stroke bg-transparent px-4 py-2.5 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white dark:focus:border-primary"
-                                    />
-                                </div>
+                        {/* Payment via Midtrans */}
+                        <div class="px-8 py-6 space-y-4">
+                            <div class="rounded-lg border border-sky-200 bg-sky-50/50 p-3 dark:border-sky-800 dark:bg-sky-900/20">
+                                <p class="flex items-center gap-2 text-xs text-sky-700 dark:text-sky-400">
+                                    <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                    You'll be redirected to Midtrans secure payment page.
+                                </p>
                             </div>
 
                             <button
-                                type="submit"
-                                class="flex w-full items-center justify-center rounded-md bg-emerald-600 px-8 py-3.5 text-base font-medium text-white shadow-md transition hover:bg-emerald-700 cursor-pointer"
+                                type="button"
+                                disabled={registerLoading.value}
+                                onClick$={handleMidtransRegister}
+                                class="flex w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-8 py-3.5 text-base font-medium text-white shadow-md transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                             >
-                                Pay ${selectedDomain.value?.price} &amp; Register
-                                <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
+                                {registerLoading.value ? (
+                                    <svg class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                ) : (
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                )}
+                                {registerLoading.value ? 'Processing...' : `Pay $${selectedDomain.value?.price} & Register`}
                             </button>
 
                             <p class="text-center text-[11px] text-body-color dark:text-dark-6">
-                                Your payment is processed securely. Domain renews at ${selectedDomain.value?.price}/year.
+                                Secure payment powered by Midtrans. Domain renews at ${selectedDomain.value?.price}/year.
                             </p>
-                        </form>
+                        </div>
                     </div>
                 </div>
             )}

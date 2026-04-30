@@ -34,6 +34,11 @@ export default component$(() => {
           />
         )}
         <RouterHead />
+        {/* Midtrans Snap.js — sandbox */}
+        <script
+          src="https://app.sandbox.midtrans.com/snap/snap.js"
+          data-client-key="SB-Mid-client-DEhbYKPYpEQm8_5M"
+        />
       </head>
       <body lang="en">
         <RouterOutlet />
