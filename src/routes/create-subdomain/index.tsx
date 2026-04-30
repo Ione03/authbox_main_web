@@ -416,16 +416,20 @@ export default component$(() => {
                                     )}
                                 </div>
 
-                                <a href="/dashboard">
-                                    <button
-                                        class="mt-8 flex w-full items-center justify-center rounded-md bg-primary px-8 py-3.5 text-center text-base font-medium text-white shadow-md transition hover:bg-opacity-90"
-                                    >
-                                        Complete Setup
-                                        <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    </button>
-                                </a>
+                                <button
+                                    disabled={
+                                        (domainOption.value === 'subdomain' && !subdomain.value.trim()) ||
+                                        (domainOption.value === 'custom' && !customDomain.value.trim()) ||
+                                        (domainOption.value === 'existing' && !existingDomain.value.trim())
+                                    }
+                                    onClick$={async () => await nav('/dashboard')}
+                                    class="mt-8 flex w-full items-center justify-center rounded-md bg-primary px-8 py-3.5 text-center text-base font-medium text-white shadow-md transition hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                >
+                                    Complete Setup
+                                    <svg class="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </button>
                                 
                             </div>
                         </div>
