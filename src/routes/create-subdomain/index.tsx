@@ -222,7 +222,7 @@ export default component$(() => {
 
                                     {domainOption.value === 'custom' && (
                                         <div class="mt-4 animate-[fadeIn_0.3s_ease-out]">
-                                            <div class="flex gap-2">
+                                            <div class="flex flex-col gap-2 sm:flex-row">
                                                 <input 
                                                     type="text" 
                                                     value={customDomain.value}
@@ -231,7 +231,7 @@ export default component$(() => {
                                                         domainStatus.value = 'idle';
                                                     }}
                                                     onKeyDown$={(e) => { if (e.key === 'Enter') handleCheckDomain(); }}
-                                                    class={`flex-1 rounded-md border bg-white px-4 py-2.5 text-sm text-dark outline-none dark:bg-dark-2 dark:text-white ${
+                                                    class={`w-full sm:flex-1 rounded-md border bg-white px-4 py-2.5 text-sm text-dark outline-none dark:bg-dark-2 dark:text-white ${
                                                         domainStatus.value === 'done' && domainResults.value.some(r => r.available) ? 'border-emerald-400 focus:border-emerald-500' :
                                                         domainStatus.value === 'error' ? 'border-red-400 focus:border-red-500' :
                                                         'border-stroke focus:border-primary dark:border-dark-3 dark:focus:border-primary'
@@ -242,10 +242,10 @@ export default component$(() => {
                                                     type="button"
                                                     onClick$={handleCheckDomain}
                                                     disabled={domainStatus.value === 'checking' || !customDomain.value.trim()}
-                                                    class="shrink-0 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                                    class="w-full sm:w-auto shrink-0 rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                                 >
                                                     {domainStatus.value === 'checking' ? (
-                                                        <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                        <svg class="mx-auto h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                                                         </svg>
