@@ -1,6 +1,48 @@
 import { component$, useSignal, $ } from '@builder.io/qwik';
 import { server$, useNavigate } from '@builder.io/qwik-city';
 
+const checkSubdomain = server$(async function (sub: string) {
+    sub = sub.trim().toLowerCase();
+    if (!sub || !/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(sub) || sub.length < 2) {
+        return { available: false, error: 'Invalid subdomain (letters, numbers, hyphens only)' };
+    }
+
+    const fullDomain = `${sub}.authbox.web.id`;
+
+    // Option 1: cPanel API (if credentials are configured)
+    const CPANEL_URL = process.env.CPANEL_URL;       // e.g. https://yourdomain.com:2083
+    const CPANEL_USER = process.env.CPANEL_USER;
+    const CPANEL_TOKEN = process.env.CPANEL_TOKEN;    // API token
+
+    if (CPANEL_URL && CPANEL_USER && CPANEL_TOKEN) {
+        try {
+            const res = await fetch(
+                `${CPANEL_URL}/execute/SubDomain/list_subdomains`,
+                { headers: { Authorization: `cpanel ${CPANEL_USER}:${CPANEL_TOKEN}` } }
+            );
+            const data = await res.json();
+            const exists = data?.data?.some((s: any) => s.domain === fullDomain || s.subdomain === sub);
+            return { available: !exists, error: null };
+        } catch {
+            // fall through to DNS check
+        }
+    }
+
+    // Option 2: DNS lookup fallback
+    const dns = await import('dns');
+    const { promisify } = await import('util');
+    const resolve = promisify(dns.resolve);
+    try {
+        await resolve(fullDomain);
+        return { available: false, error: null }; // DNS records found → taken
+    } catch (err: any) {
+        if (err.code === 'ENOTFOUND' || err.code === 'ENODATA') {
+            return { available: true, error: null }; // no records → available
+        }
+        return { available: false, error: 'Could not check subdomain' };
+    }
+});
+
 type DomainResult = {
     domain: string;
     tld: string;
@@ -80,6 +122,29 @@ export default component$(() => {
     const customDomain = useSignal<string>('');
     // Stores the user's existing domain input
     const existingDomain = useSignal<string>('');
+    // Subdomain check state
+    const subStatus = useSignal<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle');
+    const subError = useSignal<string>('');
+
+    const handleCheckSubdomain = $(async () => {
+        const s = subdomain.value.trim();
+        if (!s) return;
+        subStatus.value = 'checking';
+        subError.value = '';
+        try {
+            const result = await checkSubdomain(s);
+            if (result.error) {
+                subStatus.value = 'error';
+                subError.value = result.error;
+            } else {
+                subStatus.value = result.available ? 'available' : 'taken';
+            }
+        } catch {
+            subStatus.value = 'error';
+            subError.value = 'Network error';
+        }
+    });
+
     // Domain check state
     const domainStatus = useSignal<'idle' | 'checking' | 'done' | 'error'>('idle');
     const domainError = useSignal<string>('');
@@ -171,23 +236,72 @@ export default component$(() => {
                                         </div>
                                     </div>
                                     
-                                    <div class={`flex items-center overflow-hidden rounded-md border bg-white dark:bg-dark-2 transition-colors ${domainOption.value === 'subdomain' ? 'border-primary border-opacity-50 dark:border-primary dark:border-opacity-50' : 'border-stroke dark:border-dark-3'}`}>
+                                    <div class={`flex items-center overflow-hidden rounded-md border bg-white dark:bg-dark-2 transition-colors ${
+                                        subStatus.value === 'available' ? 'border-emerald-400' :
+                                        subStatus.value === 'taken' || subStatus.value === 'error' ? 'border-red-400' :
+                                        domainOption.value === 'subdomain' ? 'border-primary border-opacity-50 dark:border-primary dark:border-opacity-50' : 'border-stroke dark:border-dark-3'
+                                    }`}>
                                         <input 
                                             type="text" 
                                             disabled={false}
                                             value={subdomain.value} 
-                                            onInput$={(e) => subdomain.value = (e.target as HTMLInputElement).value}
+                                            onInput$={(e) => {
+                                                subdomain.value = (e.target as HTMLInputElement).value;
+                                                subStatus.value = 'idle';
+                                            }}
+                                            onKeyDown$={(e) => { if (e.key === 'Enter') handleCheckSubdomain(); }}
                                             class="w-full bg-transparent px-4 py-2.5 text-sm text-dark outline-none dark:text-white disabled:opacity-50" 
                                             placeholder="8-digit hex" 
                                         />
-                                        <span class="border-l border-stroke bg-gray-50 px-4 py-2.5 text-sm font-medium text-body-color dark:border-dark-3 dark:bg-dark-3 disabled:opacity-50">
+                                        <span class="border-l border-stroke bg-gray-50 px-4 py-2.5 text-sm font-medium text-body-color dark:border-dark-3 dark:bg-dark-3">
                                             .authbox.web.id
                                         </span>
+                                        <button
+                                            type="button"
+                                            onClick$={handleCheckSubdomain}
+                                            disabled={subStatus.value === 'checking' || !subdomain.value.trim()}
+                                            class="shrink-0 border-l border-stroke bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                        >
+                                            {subStatus.value === 'checking' ? (
+                                                <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                                </svg>
+                                            ) : 'Check'}
+                                        </button>
                                     </div>
                                     {domainOption.value === 'subdomain' && (
-                                        <p class="mt-2 text-[11px] text-body-color dark:text-dark-6">
-                                            This temporary URL can be used immediately for testing.
-                                        </p>
+                                        <div class="mt-2">
+                                            {subStatus.value === 'available' && (
+                                                <p class="flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                    </svg>
+                                                    {subdomain.value}.authbox.web.id is available!
+                                                </p>
+                                            )}
+                                            {subStatus.value === 'taken' && (
+                                                <p class="flex items-center gap-1 text-[11px] font-medium text-red-500 dark:text-red-400">
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                    {subdomain.value}.authbox.web.id is already taken
+                                                </p>
+                                            )}
+                                            {subStatus.value === 'error' && (
+                                                <p class="flex items-center gap-1 text-[11px] font-medium text-red-500 dark:text-red-400">
+                                                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    {subError.value}
+                                                </p>
+                                            )}
+                                            {subStatus.value === 'idle' && (
+                                                <p class="text-[11px] text-body-color dark:text-dark-6">
+                                                    This temporary URL can be used immediately for testing.
+                                                </p>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
 
