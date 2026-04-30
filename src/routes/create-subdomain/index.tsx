@@ -74,10 +74,12 @@ export default component$(() => {
     const initialSubdomain = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
     // Stores the randomly generated hex string
     const subdomain = useSignal<string>(initialSubdomain);
-    // Tracks whether the user is choosing the Premium custom domain
-    const useCustomDomain = useSignal<boolean>(false);
+    // Tracks which domain option is selected
+    const domainOption = useSignal<'subdomain' | 'custom' | 'existing'>('subdomain');
     // Stores the user's custom domain input
     const customDomain = useSignal<string>('');
+    // Stores the user's existing domain input
+    const existingDomain = useSignal<string>('');
     // Domain check state
     const domainStatus = useSignal<'idle' | 'checking' | 'done' | 'error'>('idle');
     const domainError = useSignal<string>('');
@@ -152,16 +154,16 @@ export default component$(() => {
                                 {/* Free Subdomain Option */}
                                 <div 
                                     class={`cursor-pointer rounded-xl border-2 p-5 transition-all ${
-                                        !useCustomDomain.value 
+                                        domainOption.value === 'subdomain'
                                             ? 'border-primary bg-primary/5 dark:bg-primary/10 ring-2 ring-primary ring-opacity-20' 
                                             : 'border-stroke hover:border-primary/50 dark:border-dark-3'
                                     }`}
-                                    onClick$={() => useCustomDomain.value = false}
+                                    onClick$={() => domainOption.value = 'subdomain'}
                                 >
                                     <div class="flex items-center justify-between mb-3">
                                         <h3 class="font-semibold text-dark dark:text-white">Generated Subdomain</h3>
-                                        <div class={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors ${!useCustomDomain.value ? 'border-primary bg-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
-                                            {!useCustomDomain.value && (
+                                        <div class={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors ${domainOption.value === 'subdomain' ? 'border-primary bg-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                                            {domainOption.value === 'subdomain' && (
                                                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                                 </svg>
@@ -169,20 +171,20 @@ export default component$(() => {
                                         </div>
                                     </div>
                                     
-                                    <div class={`flex items-center overflow-hidden rounded-md border bg-white dark:bg-dark-2 transition-colors ${!useCustomDomain.value ? 'border-primary border-opacity-50 dark:border-primary dark:border-opacity-50' : 'border-stroke dark:border-dark-3'}`}>
+                                    <div class={`flex items-center overflow-hidden rounded-md border bg-white dark:bg-dark-2 transition-colors ${domainOption.value === 'subdomain' ? 'border-primary border-opacity-50 dark:border-primary dark:border-opacity-50' : 'border-stroke dark:border-dark-3'}`}>
                                         <input 
                                             type="text" 
-                                            disabled={useCustomDomain.value}
+                                            disabled={false}
                                             value={subdomain.value} 
                                             onInput$={(e) => subdomain.value = (e.target as HTMLInputElement).value}
                                             class="w-full bg-transparent px-4 py-2.5 text-sm text-dark outline-none dark:text-white disabled:opacity-50" 
-                                            placeholder="8-digit hex"
+                                            placeholder="8-digit hex" 
                                         />
                                         <span class="border-l border-stroke bg-gray-50 px-4 py-2.5 text-sm font-medium text-body-color dark:border-dark-3 dark:bg-dark-3 disabled:opacity-50">
-                                            .authbox.app
+                                            .authbox.web.id
                                         </span>
                                     </div>
-                                    {!useCustomDomain.value && (
+                                    {domainOption.value === 'subdomain' && (
                                         <p class="mt-2 text-[11px] text-body-color dark:text-dark-6">
                                             This temporary URL can be used immediately for testing.
                                         </p>
@@ -192,11 +194,11 @@ export default component$(() => {
                                 {/* Custom Domain Option (Premium) */}
                                 <div 
                                     class={`cursor-pointer rounded-xl border-2 p-5 transition-all ${
-                                        useCustomDomain.value 
+                                        domainOption.value === 'custom'
                                             ? 'border-primary bg-primary/5 dark:bg-primary/10 ring-2 ring-primary ring-opacity-20' 
                                             : 'border-stroke hover:border-primary/50 dark:border-dark-3'
                                     }`}
-                                    onClick$={() => useCustomDomain.value = true}
+                                    onClick$={() => domainOption.value = 'custom'}
                                 >
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="flex items-center gap-2">
@@ -209,8 +211,8 @@ export default component$(() => {
                                                 PRO
                                             </span>
                                         </div>
-                                        <div class={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors ${useCustomDomain.value ? 'border-primary bg-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
-                                            {useCustomDomain.value && (
+                                        <div class={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors ${domainOption.value === 'custom' ? 'border-primary bg-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                                            {domainOption.value === 'custom' && (
                                                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                                 </svg>
@@ -218,7 +220,7 @@ export default component$(() => {
                                         </div>
                                     </div>
 
-                                    {useCustomDomain.value && (
+                                    {domainOption.value === 'custom' && (
                                         <div class="mt-4 animate-[fadeIn_0.3s_ease-out]">
                                             <div class="flex gap-2">
                                                 <input 
@@ -309,19 +311,6 @@ export default component$(() => {
                                                         ))}
                                                     </div>
 
-                                                    {/* Register selected domain */}
-                                                    {selectedDomain.value && (
-                                                        <button
-                                                            type="button"
-                                                            onClick$={() => showRegister.value = true}
-                                                            class="mt-2 flex w-full items-center justify-center gap-2 rounded-md bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-emerald-700 cursor-pointer"
-                                                        >
-                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
-                                                            </svg>
-                                                            Register {selectedDomain.value.domain} — ${selectedDomain.value.price}/yr
-                                                        </button>
-                                                    )}
                                                     {!domainResults.value.some(r => r.available) && (
                                                         <p class="mt-1 text-center text-xs text-red-500 dark:text-red-400">
                                                             No extensions available for this name. Try a different domain.
@@ -342,6 +331,87 @@ export default component$(() => {
                                                     Enter a domain name and click Check to see available extensions.
                                                 </p>
                                             )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Existing Domain Option */}
+                                <div 
+                                    class={`cursor-pointer rounded-xl border-2 p-5 transition-all ${
+                                        domainOption.value === 'existing'
+                                            ? 'border-primary bg-primary/5 dark:bg-primary/10 ring-2 ring-primary ring-opacity-20' 
+                                            : 'border-stroke hover:border-primary/50 dark:border-dark-3'
+                                    }`}
+                                    onClick$={() => domainOption.value = 'existing'}
+                                >
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="font-semibold text-dark dark:text-white">Existing Domain</h3>
+                                            <span class="flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-600 shadow-sm dark:bg-amber-900/30 dark:text-amber-500">
+                                                {/* Premium Star Icon */}
+                                                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg>
+                                                PRO
+                                            </span>
+                                        </div>
+                                        <div class={`flex h-5 w-5 items-center justify-center rounded-full border transition-colors ${domainOption.value === 'existing' ? 'border-primary bg-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                                            {domainOption.value === 'existing' && (
+                                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {domainOption.value === 'existing' && (
+                                        <div class="mt-4 animate-[fadeIn_0.3s_ease-out] space-y-4">
+                                            <div>
+                                                <label class="mb-1.5 block text-xs font-medium text-dark dark:text-white">Your domain</label>
+                                                <input 
+                                                    type="text" 
+                                                    value={existingDomain.value}
+                                                    onInput$={(e) => existingDomain.value = (e.target as HTMLInputElement).value}
+                                                    class="w-full rounded-md border border-stroke bg-white px-4 py-2.5 text-sm text-dark outline-none focus:border-primary dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary" 
+                                                    placeholder="e.g. yourdomain.com"
+                                                />
+                                            </div>
+
+                                            <div class="rounded-lg border border-sky-200 bg-sky-50/50 p-4 dark:border-sky-800 dark:bg-sky-900/20">
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    <svg class="h-4 w-4 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    <span class="text-xs font-semibold text-sky-700 dark:text-sky-400">Change your nameservers to:</span>
+                                                </div>
+                                                <div class="space-y-2">
+                                                    {[
+                                                        { label: 'Nameserver 1', value: 'best.jagoanhosting.com' },
+                                                        { label: 'Nameserver 2', value: 'great.jagoanhosting.com' },
+                                                        { label: 'Nameserver 3', value: 'one.jagoanhosting.com' },
+                                                    ].map((ns) => (
+                                                        <div key={ns.label} class="flex items-center justify-between rounded-md border border-stroke bg-white px-3 py-2 dark:border-dark-3 dark:bg-dark-2">
+                                                            <div>
+                                                                <p class="text-[10px] text-body-color dark:text-dark-6">{ns.label}</p>
+                                                                <p class="text-xs font-mono font-semibold text-dark dark:text-white">{ns.value}</p>
+                                                            </div>
+                                                            <button
+                                                                type="button"
+                                                                onClick$={() => navigator.clipboard.writeText(ns.value)}
+                                                                class="flex h-7 w-7 items-center justify-center rounded-md text-body-color transition hover:bg-gray-100 hover:text-primary dark:text-dark-6 dark:hover:bg-dark-3 dark:hover:text-primary cursor-pointer"
+                                                                title={`Copy ${ns.value}`}
+                                                            >
+                                                                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <p class="mt-3 text-[11px] text-sky-600 dark:text-sky-400">
+                                                    Update these at your domain registrar. DNS propagation may take up to 48 hours.
+                                                </p>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
