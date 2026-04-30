@@ -535,16 +535,28 @@ export default component$(() => {
                                                 </svg>
                                                 View Site
                                             </a>
-                                            {/* Edit */}
-                                            <button
+                                            {/* Edit Domain */}
+                                            <a
+                                                href={`/create-subdomain?edit=${site.id}`}
                                                 class="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-body-color transition hover:bg-gray-50 dark:text-dark-6 dark:hover:bg-dark-3"
                                                 onClick$={() => openDropdown.value = null}
                                             >
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                                                 </svg>
-                                                Edit
-                                            </button>
+                                                Edit Domain
+                                            </a>
+                                            {/* Edit Template */}
+                                            <a
+                                                href={`/templates?edit=${site.id}`}
+                                                class="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-body-color transition hover:bg-gray-50 dark:text-dark-6 dark:hover:bg-dark-3"
+                                                onClick$={() => openDropdown.value = null}
+                                            >
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm0 8a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zm10 0a1 1 0 011-1h4a1 1 0 011 1v6a1 1 0 01-1 1h-4a1 1 0 01-1-1v-6z" />
+                                                </svg>
+                                                Edit Template
+                                            </a>
                                             {/* Divider */}
                                             <div class="border-t border-stroke dark:border-dark-3"></div>
                                             {/* Delete */}
