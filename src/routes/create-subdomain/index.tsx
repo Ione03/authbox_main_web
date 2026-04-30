@@ -229,23 +229,26 @@ export default component$(() => {
                     {/* Card (Matching exact signin design footprint) */}
                     <div class="w-full max-w-md overflow-hidden rounded-2xl border border-stroke bg-white shadow-xl dark:border-dark-3 dark:bg-dark-2">
 
-                        {/* Card header strip */}
+                        {/* Card header strip (Toolbar) */}
                         <div
-                            class="px-8 py-8 text-center"
-                            style="background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);"
+                            class="flex flex-col justify-between border-b border-stroke px-6 py-6 dark:border-dark-3 sm:flex-row sm:items-center sm:px-8"
+                            style="background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(168,85,247,0.05) 100%);"
                         >
-                            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white shadow-md dark:bg-dark-3">
-                                {/* Globe / Link icon */}
-                                <svg class="h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                                </svg>
+                            <div class="flex items-center gap-4">
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white shadow-md dark:bg-dark-3">
+                                    <svg class="h-7 w-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                </div>
+                                <div class="text-left">
+                                    <h1 class="text-2xl font-bold tracking-tight text-dark dark:text-white">
+                                        Platform Domain
+                                    </h1>
+                                    <p class="mt-1 text-sm text-body-color dark:text-dark-6">
+                                        Where will your app be hosted?
+                                    </p>
+                                </div>
                             </div>
-                            <h1 class="text-2xl font-bold tracking-tight text-dark dark:text-dark">
-                                Platform Domain
-                            </h1>
-                            <p class="mt-1 text-sm text-body-color dark:text-dark-6">
-                                Where will your app be hosted?
-                            </p>
                         </div>
 
                         {/* Card body */}

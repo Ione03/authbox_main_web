@@ -67,7 +67,7 @@ export default component$(() => {
 
                         {/* Card body */}
                         <div class="px-6 py-6 sm:px-8 sm:py-8">
-                            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8">
+                            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
                                 {templates.map((tpl) => {
                                     const isSelected = selectedTemplate.value === tpl.id;
                                     return (
